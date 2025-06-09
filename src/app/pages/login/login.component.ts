@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
@@ -25,7 +26,15 @@ export class LoginComponent {
   onSubmit(event : Event) {
     event.preventDefault()
 
-    this.authService.login({email: this.email, password: this.password}).subscribe({
+    const loginPayload = {
+      email : this.email,
+      password : this.password,
+      type: 'password'
+    }
+
+      console.log('Payload enviado:', loginPayload);
+
+    this.authService.login(loginPayload).subscribe({
       next: (response) => {
         this.authService.saveToken(response.token);
         this.router.navigate(['/home'])

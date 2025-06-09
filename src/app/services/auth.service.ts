@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 interface LoginRequest {
   email: string;
   password: string;
+  type: string;
 }
 
 interface LoginResponse{
