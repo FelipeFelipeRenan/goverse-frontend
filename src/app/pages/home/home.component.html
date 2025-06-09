@@ -1,0 +1,17 @@
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-4">Bem-vindo ao Goverse 👋</h1>
+  
+  <h2 class="text-xl font-semibold mb-2">Suas Salas</h2>
+  <div class="grid gap-4">
+    <div
+      *ngFor="let room of rooms"
+      class="border p-4 rounded-lg shadow-sm hover:shadow-md transition"
+    >
+      <h3 class="text-lg font-medium">{{ room.name }}</h3>
+      <p class="text-sm text-gray-500">{{ room.online }} online</p>
+      <button class="mt-2 text-sm text-blue-600 hover:underline" [routerLink]="['/rooms', room.id]">
+        Entrar na sala
+      </button>
+    </div>
+  </div>
+</div>
