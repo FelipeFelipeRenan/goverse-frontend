@@ -19,6 +19,7 @@ export class LoginComponent {
   }
 
   onSubmit(event : Event) {
+    event.preventDefault();
     if (this.loginForm.invalid) return;
     const { email, password } = this.loginForm.value;
     console.log('Login:', email, password);
