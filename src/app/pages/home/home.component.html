@@ -1,17 +1,29 @@
-<div class="p-6">
-  <h1 class="text-2xl font-bold mb-4">Bem-vindo ao Goverse 👋</h1>
-  
-  <h2 class="text-xl font-semibold mb-2">Suas Salas</h2>
-  <div class="grid gap-4">
-    <div
-      *ngFor="let room of rooms"
-      class="border p-4 rounded-lg shadow-sm hover:shadow-md transition"
-    >
-      <h3 class="text-lg font-medium">{{ room.name }}</h3>
-      <p class="text-sm text-gray-500">{{ room.online }} online</p>
-      <button class="mt-2 text-sm text-blue-600 hover:underline" [routerLink]="['/rooms', room.id]">
-        Entrar na sala
-      </button>
+<div class="p-4 space-y-8">
+  <section>
+    <h2 class="text-xl font-semibold mb-2">Salas que você criou</h2>
+    <div *ngIf="ownedRooms.length; else noOwned" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let room of ownedRooms" class="p-4 rounded-xl shadow bg-white border">
+        <h3 class="text-lg font-bold">{{ room.room_name }}</h3>
+        <p class="text-sm text-gray-600">{{ room.room_description }}</p>
+        <p class="text-xs text-gray-400 mt-2">Membros: {{ room.member_count }}/{{ room.max_members }}</p>
+      </div>
     </div>
-  </div>
+    <ng-template #noOwned>
+      <p class="text-gray-500 italic">Você ainda não criou nenhuma sala.</p>
+    </ng-template>
+  </section>
+
+  <section>
+    <h2 class="text-xl font-semibold mb-2">Salas que você participa</h2>
+    <div *ngIf="joinedRooms.length; else noJoined" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let room of joinedRooms" class="p-4 rounded-xl shadow bg-white border">
+        <h3 class="text-lg font-bold">{{ room.room_name }}</h3>
+        <p class="text-sm text-gray-600">{{ room.room_description }}</p>
+        <p class="text-xs text-gray-400 mt-2">Membros: {{ room.member_count }}/{{ room.max_members }}</p>
+      </div>
+    </div>
+    <ng-template #noJoined>
+      <p class="text-gray-500 italic">Você ainda não participa de nenhuma sala.</p>
+    </ng-template>
+  </section>
 </div>

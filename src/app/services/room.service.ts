@@ -1,34 +1,32 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Room{
+export interface Room {
   room_id: string;
   room_name: string;
   room_description: string;
   is_public: boolean;
   owner_id: string;
-  member_count:number ;
+  member_count: number;
   max_members: number;
   created_at: string;
   updated_at: string;
 }
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class RoomService {
+  private baseUrl = 'http://localhost:8088'; // API Gateway
 
-  private API_URL = 'http://localhost:8088'
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  getOwnedRooms(): Observable<Room[]>{
-    return this.http.get<Room[]>(`${this.API_URL}/rooms/mine`);
+  getOwnedRooms(): Observable<Room[]> {
+    return this.http.get<Room[]>(`${this.baseUrl}/rooms/mine`);
   }
 
-  getJoinedRooms(): Observable<Room[]>{
-    return this.http.get<Room[]>(`${this.API_URL}/user/rooms`)
+  getJoinedRooms(): Observable<Room[]> {
+    return this.http.get<Room[]>(`${this.baseUrl}/user/rooms`);
   }
 }
