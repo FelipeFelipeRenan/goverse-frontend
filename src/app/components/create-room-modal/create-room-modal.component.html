@@ -1,1 +1,64 @@
-<p>create-room-modal works!</p>
+<div
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+>
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Criar Nova Sala</h2>
+
+        <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700"
+                    >Nome da Sala</label
+                >
+                <input
+                    formControlName="room_name"
+                    type="text"
+                    class="mt-1 w-full border rounded-md p-2"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700"
+                    >Descrição</label
+                >
+                <textarea
+                    formControlName="room_description"
+                    rows="3"
+                    class="mt-1 w-full border rounded-md p-2"
+                ></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700"
+                    >Máximo de Membros</label
+                >
+                <input
+                    formControlName="max_members"
+                    type="number"
+                    class="mt-1 w-full border rounded-md p-2"
+                />
+            </div>
+            <div>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" formControlName="is_public" />
+                    Sala Pública
+                </label>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button
+                    type="button"
+                    (click)="onCancel()"
+                    class="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Criar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
