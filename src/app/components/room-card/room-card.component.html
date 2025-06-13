@@ -1,0 +1,41 @@
+<div
+    class="bg-white p-6 rounded-2xl shadow-md border hover:shadow-lg transition-all duration-200 hover:ring-2"
+    [class]="borderClass"
+>
+    <div class="flex items-center justify-between mb-4">
+        <div class="p-2 rounded-full" [class]="bgClass">
+            <svg
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                class="w-5 h-5"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 7h18M3 12h18M3 17h18"
+                ></path>
+            </svg>
+        </div>
+        <span
+            class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500"
+        >
+            {{ room.is_public ? "Pública" : "Privada" }}
+        </span>
+    </div>
+
+    <h4 class="text-lg font-bold text-gray-800 truncate">
+        {{ room.room_name || "Sala sem nome" }}
+        <!-- Alterado para room.room_name -->
+    </h4>
+
+    <p class="text-sm text-gray-600 mt-2 line-clamp-3">
+        {{ room.room_description || "Sem descrição." }}
+        <!-- Alterado para room.room_description -->
+    </p>
+
+    <p class="text-xs text-gray-500 mt-4">
+        Membros: {{ room.member_count }}/{{ room.max_members }}
+    </p>
+</div>

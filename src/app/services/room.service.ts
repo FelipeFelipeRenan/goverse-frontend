@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+// room.service.ts
 export interface Room {
-    room_id: string;
-    room_name: string;
-    room_description: string;
+    id: string;
+    room_name: string;  // Alterado de 'name' para 'room_name'
+    room_description: string;  // Alterado de 'description' para 'room_description'
     is_public: boolean;
     owner_id: string;
     member_count: number;
@@ -15,8 +16,8 @@ export interface Room {
 }
 
 export interface CreateRoomPayload {
-    room_name: string;
-    room_description: string;
+    name: string;
+    description: string;
     max_members: number;
     is_public: boolean;
 }
@@ -25,7 +26,7 @@ export interface CreateRoomPayload {
     providedIn: 'root',
 })
 export class RoomService {
-    private baseUrl = 'http://localhost:8088'; // API Gateway
+    private baseUrl = 'http://localhost:8088';
 
     constructor(private http: HttpClient) {}
 
