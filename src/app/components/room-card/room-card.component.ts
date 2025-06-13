@@ -12,6 +12,8 @@ import { Room } from '../../services/room.service';
 export class RoomCardComponent {
   @Input() room!: Room;
   @Input() color: 'blue' | 'green' = 'blue';
+  @Input() showActions = false 
+  @Input() showMenu = false; 
 
   get borderClass() {
     return this.color === 'blue' 
@@ -25,6 +27,23 @@ export class RoomCardComponent {
       : 'bg-green-100 text-green-700';
   }
 
-  
+  toggleMenu(event: MouseEvent){
+    event.stopPropagation();
+    this.showMenu = !this.showMenu;
+  }
+
+  closeMenu(){
+    this.showMenu = false;
+  }
+
+  editRoom() {
+    alert('Editar sala: ' + this.room.room_name)
+    this.closeMenu();
+  }
+
+  deleteRoom(){
+    alert('Excluir sala: ' + this.room.room_name)
+    this.closeMenu();
+  }
 
 }
