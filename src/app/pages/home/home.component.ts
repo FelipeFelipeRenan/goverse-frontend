@@ -33,48 +33,61 @@ export class HomeComponent implements OnInit {
     this.loadRooms();
   }
 
-  loadRooms() {
+  loadRooms(): void {
     this.loading = true;
-    
+
     this.roomService.getOwnedRooms().subscribe({
-      next: rooms => {
+      next: (rooms) => {
         this.ownedRooms = rooms;
         this.loading = false;
       },
-      error: err => {
+      error: (err) => {
         console.error('Erro ao carregar salas criadas:', err);
         this.loading = false;
       }
     });
 
     this.roomService.getJoinedRooms().subscribe({
-      next: rooms => {
+      next: (rooms) => {
         this.joinedRooms = rooms;
-        this.loading = false;
       },
-      error: err => {
+      error: (err) => {
         console.error('Erro ao carregar salas que participa:', err);
-        this.loading = false;
       }
     });
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout();
-    this.router.navigate(["/login"]);
+    this.router.navigate(['/login']);
   }
 
-  onCreateRoom() {
+  onCreateRoom(): void {
     this.showCreateModal = true;
   }
 
-  onModalClose() {
+  onModalClose(): void {
     this.showCreateModal = false;
   }
 
-  onRoomCreated(newRoom: Room) {
-    // Em vez de adicionar manualmente, recarrega toda a lista
+  onRoomCreated(newRoom: Room): void {
+    // Atualiza a lista completa após criação
     this.loadRooms();
     this.showCreateModal = false;
+  }
+
+  onDeleteRoom(roomId: string): void {
+    if (!roomId || !confirm('Deseja realmente excluir esta sala?')) return;
+
+    this.roomService.deleteRoom(roomId).subscribe({
+      next: () => {
+        this.ownedRooms = this.ownedRooms.filter(room => room.room_id !== roomId);
+        alert('Sala excluída com sucesso!');
+      },
+      error: (err) => {
+        console.error('Erro ao excluir sala:', err);
+        alert('Erro ao excluir sala.');
+      }
+    });
   }
 }

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // room.service.ts
 export interface Room {
-    id: string;
+    room_id: string;
     room_name: string;  // Alterado de 'name' para 'room_name'
     room_description: string;  // Alterado de 'description' para 'room_description'
     is_public: boolean;
@@ -40,5 +40,9 @@ export class RoomService {
 
     createRoom(roomData: CreateRoomPayload): Observable<Room> {
         return this.http.post<Room>(`${this.baseUrl}/rooms`, roomData);
+    }
+
+    deleteRoom(roomId: string): Observable<void>{
+        return this.http.delete<void>(`${this.baseUrl}/rooms/${roomId}`)
     }
 }
