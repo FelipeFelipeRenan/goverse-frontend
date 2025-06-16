@@ -22,6 +22,14 @@ export interface CreateRoomPayload {
     is_public: boolean;
 }
 
+
+export interface UpdateRoomPayload {
+    name?: string;
+    description?: string;
+    max_members?: number;
+    is_public?: boolean;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -45,4 +53,15 @@ export class RoomService {
     deleteRoom(roomId: string): Observable<void>{
         return this.http.delete<void>(`${this.baseUrl}/rooms/${roomId}`)
     }
+
+updateRoom(roomId: string, updates: Partial<{
+    name: string;
+    description: string;
+    is_public: boolean;
+    max_members: number;
+}>): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/rooms/${roomId}`, updates, {
+        headers: { 'Accept': 'application/json' }
+    });
+}
 }

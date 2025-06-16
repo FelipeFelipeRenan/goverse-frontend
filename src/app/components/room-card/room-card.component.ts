@@ -16,6 +16,8 @@ export class RoomCardComponent {
 
     @Output() onDelete = new EventEmitter<string>();
 
+    @Output() onEdit = new EventEmitter<Room>();
+
     @Input() showMenu = false;
 
     get borderClass() {
@@ -30,9 +32,7 @@ export class RoomCardComponent {
             : 'bg-green-100 text-green-700';
     }
 
-    ngOnInit() {
-        console.log('Room recebido no card:', this.room);
-    }
+    ngOnInit() {}
 
     toggleMenu(event: MouseEvent) {
         event.stopPropagation();
@@ -45,12 +45,12 @@ export class RoomCardComponent {
 
     editRoom() {
         alert('Editar sala: ' + this.room.room_name);
+        this.onEdit.emit(this.room);
         this.closeMenu();
     }
 
     deleteRoom() {
         alert('Excluir sala: ' + this.room.room_id);
-        console.log('Emitindo exclusão da sala com id:', this.room?.room_id);
 
         this.onDelete.emit(this.room.room_id);
 
