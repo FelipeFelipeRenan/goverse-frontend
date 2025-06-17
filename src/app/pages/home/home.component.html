@@ -1,52 +1,56 @@
-<div
-    class="min-h-screen bg-gradient-to-b from-blue-50 via-gray-50 to-white pb-20"
->
-    <!-- Navbar -->
-    <header class="bg-white/80 backdrop-blur shadow-sm sticky top-0 z-50">
-        <div
-            class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center"
-        >
-            <h1 class="text-2xl font-bold text-blue-700 tracking-tight">
-                Goverse
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 pb-20">
+    <!-- Navbar atualizada -->
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800 tracking-tight flex items-center">
+                <span class="bg-blue-600 text-white px-3 py-1.5 rounded-lg shadow-md flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+                    </svg>
+                    Goverse
+                </span>
             </h1>
             <button
                 (click)="logout()"
-                class="text-sm font-medium text-gray-700 hover:text-red-600 transition-colors duration-200"
+                class="text-sm font-medium text-gray-600 hover:text-red-500 transition-all duration-200 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-200 hover:shadow-md flex items-center"
             >
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
                 Sair
             </button>
         </div>
     </header>
 
-    <!-- Overlay de carregamento -->
+    <!-- Overlay de carregamento atualizado -->
     <div
         *ngIf="loading"
-        class="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50"
+        class="fixed inset-0 bg-gray-100/80 backdrop-blur-sm flex items-center justify-center z-50"
     >
-        <div class="bg-white p-6 rounded-lg shadow-xl flex items-center">
-            <div
-                class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mr-4"
-            ></div>
-            <span class="text-lg font-medium">Carregando salas...</span>
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 flex items-center">
+            <div class="relative">
+                <div class="w-12 h-12 rounded-full bg-blue-100"></div>
+                <div class="absolute top-0 left-0 w-12 h-12 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
+            </div>
+            <span class="ml-4 text-lg font-medium text-gray-700">Carregando salas...</span>
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto px-4 pt-12 space-y-16">
-        <!-- Título principal + botão -->
-        <div
-            class="flex flex-col sm:flex-row justify-between items-center gap-4"
-        >
-            <h2
-                class="text-4xl font-extrabold text-gray-900 text-center sm:text-left"
-            >
-                Suas Salas
-            </h2>
+    <main class="max-w-7xl mx-auto px-4 pt-10 space-y-14">
+        <!-- Header atualizado -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-5">
+            <div class="relative">
+                <h2 class="text-4xl font-bold text-gray-800 text-center sm:text-left relative z-10">
+                    Suas Salas
+                </h2>
+                <div class="absolute -bottom-1 left-0 w-24 h-2 bg-blue-200 rounded-full z-0"></div>
+            </div>
             <button
                 (click)="onCreateRoom()"
-                class="inline-flex items-center px-5 py-3 bg-blue-600 text-white text-sm font-semibold rounded-xl shadow-md hover:bg-blue-700 hover:scale-105 transition-all"
+                class="w-full sm:w-auto flex justify-center items-center px-5 py-3 border border-transparent rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm font-medium transition-all"
             >
                 <svg
-                    class="w-5 h-5 mr-2"
+                    class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
@@ -62,11 +66,15 @@
             </button>
         </div>
 
-        <!-- Salas criadas -->
+        <!-- Seção de salas criadas -->
         <section [class.opacity-70]="loading">
-            <h3 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">
-                Salas que você criou
-            </h3>
+            <div class="flex items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-700 mr-3">
+                    Salas que você criou
+                </h3>
+                <div class="flex-1 h-px bg-gray-200"></div>
+            </div>
+
             <div
                 *ngIf="ownedRooms.length; else noOwned"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -81,17 +89,28 @@
                 ></app-room-card>
             </div>
             <ng-template #noOwned>
-                <p class="text-gray-500 italic mt-2">
-                    Você ainda não criou nenhuma sala.
-                </p>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <p class="text-gray-600">
+                            Você ainda não criou nenhuma sala.
+                        </p>
+                    </div>
+                </div>
             </ng-template>
         </section>
 
-        <!-- Salas participadas -->
+        <!-- Seção de salas participadas -->
         <section [class.opacity-70]="loading">
-            <h3 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">
-                Salas que você participa
-            </h3>
+            <div class="flex items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-700 mr-3">
+                    Salas que você participa
+                </h3>
+                <div class="flex-1 h-px bg-gray-200"></div>
+            </div>
+
             <div
                 *ngIf="joinedRooms.length; else noJoined"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -103,17 +122,26 @@
                 ></app-room-card>
             </div>
             <ng-template #noJoined>
-                <p class="text-gray-500 italic mt-2">
-                    Você ainda não participa de nenhuma sala.
-                </p>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <p class="text-gray-600">
+                            Você ainda não participa de nenhuma sala.
+                        </p>
+                    </div>
+                </div>
             </ng-template>
         </section>
     </main>
+
     <app-create-room-modal
         *ngIf="showCreateModal"
         (close)="onModalClose()"
         (roomCreated)="onRoomCreated($event)"
     ></app-create-room-modal>
+
     <app-edit-room-modal
         *ngIf="roomBeingEdited"
         [room]="roomBeingEdited"

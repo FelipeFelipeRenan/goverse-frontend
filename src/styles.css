@@ -8,3 +8,35 @@
   opacity: 0.7;
   pointer-events: none;
 }
+
+/* Glassmorphism Effect */
+.glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Neumorphism Effect */
+.neumorphism-card {
+    background: #e6f0fa;
+    border-radius: 16px;
+    box-shadow:
+        8px 8px 16px rgba(163, 177, 198, 0.6),
+        -8px -8px 16px rgba(255, 255, 255, 0.8);
+}
+
+.neumorphism-btn {
+    background: linear-gradient(145deg, #3b82f6, #2563eb);
+    box-shadow:
+        5px 5px 10px rgba(163, 177, 198, 0.6),
+        -5px -5px 10px rgba(255, 255, 255, 0.8);
+}
+
+.shadow-neumorph-inner {
+    box-shadow:
+        inset 3px 3px 5px rgba(163, 177, 198, 0.6),
+        inset -3px -3px 5px rgba(255, 255, 255, 0.8);
+}
+
