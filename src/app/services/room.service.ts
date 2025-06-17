@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 // room.service.ts
 export interface Room {
     room_id: string;
-    room_name: string;  // Alterado de 'name' para 'room_name'
-    room_description: string;  // Alterado de 'description' para 'room_description'
+    room_name: string; // Alterado de 'name' para 'room_name'
+    room_description: string; // Alterado de 'description' para 'room_description'
     is_public: boolean;
     owner_id: string;
     member_count: number;
@@ -22,12 +22,19 @@ export interface CreateRoomPayload {
     is_public: boolean;
 }
 
-
 export interface UpdateRoomPayload {
     name?: string;
     description?: string;
     max_members?: number;
     is_public?: boolean;
+}
+
+export type Role = 'owner' | 'admin' | 'member' | 'guest' | 'moderator';
+
+export interface RoomMember {
+    user_id: string;
+    room_id: string;
+    role: Role;
 }
 
 @Injectable({
@@ -50,18 +57,54 @@ export class RoomService {
         return this.http.post<Room>(`${this.baseUrl}/rooms`, roomData);
     }
 
-    deleteRoom(roomId: string): Observable<void>{
-        return this.http.delete<void>(`${this.baseUrl}/rooms/${roomId}`)
+    deleteRoom(roomId: string): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/rooms/${roomId}`);
     }
 
-updateRoom(roomId: string, updates: Partial<{
-    name: string;
-    description: string;
-    is_public: boolean;
-    max_members: number;
-}>): Observable<void> {
-    return this.http.patch<void>(`${this.baseUrl}/rooms/${roomId}`, updates, {
-        headers: { 'Accept': 'application/json' }
-    });
-}
+    updateRoom(
+        roomId: string,
+        updates: Partial<{
+            name: string;
+            description: string;
+            is_public: boolean;
+            max_members: number;
+        }>
+    ): Observable<void> {
+        return this.http.patch<void>(
+            `${this.baseUrl}/rooms/${roomId}`,
+            updates,
+            {
+                headers: { Accept: 'application/json' },
+            }
+        );
+    }
+
+    getMembers(roomId: string): Observable<RoomMember[]> {
+        return this.http.get<RoomMember[]>(
+            `${this.baseUrl}/rooms/${roomId}/members`
+        );
+    }
+
+    addMember(roomId: string, userId: string): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/rooms/${roomId}/members`, {
+            user_id: userId,
+        });
+    }
+
+    removeMember(roomId: string, memberId: string): Observable<void> {
+        return this.http.delete<void>(
+            `${this.baseUrl}/rooms/${roomId}/members/${memberId}`
+        );
+    }
+
+    updateMemberRole(
+        roomId: string,
+        memberId: string,
+        role: Role
+    ): Observable<void> {
+        return this.http.put<void>(
+            `${this.baseUrl}/rooms/${roomId}/members/${memberId}/role`,
+            { role }
+        );
+    }
 }
