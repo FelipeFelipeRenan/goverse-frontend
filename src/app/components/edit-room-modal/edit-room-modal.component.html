@@ -1,55 +1,74 @@
-<!-- edit-room-modal.component.html -->
-<div
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
->
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 class="text-xl font-semibold mb-4">Editar Sala</h2>
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Editar Sala</h2>
+            <button (click)="cancel()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
 
-        <form (ngSubmit)="submit()">
-            <input
-                [(ngModel)]="editedRoom.name"
-                name="room_name"
-                class="w-full mb-2 p-2 border rounded"
-                placeholder="Nome da sala"
-            />
-            <textarea
-                [(ngModel)]="editedRoom.description"
-                name="room_description"
-                class="w-full mb-2 p-2 border rounded"
-                placeholder="Descrição"
-            ></textarea>
+        <form (ngSubmit)="submit()" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nome da sala</label>
+                <input
+                    [(ngModel)]="editedRoom.name"
+                    name="room_name"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    placeholder="Digite o nome da sala"
+                />
+            </div>
 
-            <label class="flex items-center mb-2">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                <textarea
+                    [(ngModel)]="editedRoom.description"
+                    name="room_description"
+                    rows="3"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    placeholder="Adicione uma descrição"
+                ></textarea>
+            </div>
+
+            <div class="flex items-center">
                 <input
                     type="checkbox"
                     [(ngModel)]="editedRoom.is_public"
                     name="is_public"
-                    class="mr-2"
+                    id="is_public"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                Sala pública
-            </label>
+                <label for="is_public" class="ml-2 block text-sm text-gray-700">
+                    Sala pública
+                </label>
+            </div>
 
-            <input
-                [(ngModel)]="editedRoom.max_members"
-                name="max_members"
-                type="number"
-                class="w-full mb-4 p-2 border rounded"
-                placeholder="Máximo de membros"
-            />
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Máximo de membros</label>
+                <input
+                    [(ngModel)]="editedRoom.max_members"
+                    name="max_members"
+                    type="number"
+                    min="1"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    placeholder="Número máximo de participantes"
+                />
+            </div>
 
-            <div class="flex justify-end space-x-2">
+            <div class="flex justify-end space-x-3 pt-2">
                 <button
                     type="button"
                     (click)="cancel()"
-                    class="bg-gray-200 px-4 py-2 rounded"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    class="bg-blue-500 text-white px-4 py-2 rounded"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
                 >
-                    Salvar
+                    Salvar alterações
                 </button>
             </div>
         </form>
