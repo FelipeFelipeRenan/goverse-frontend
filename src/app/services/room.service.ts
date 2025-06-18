@@ -32,9 +32,17 @@ export interface UpdateRoomPayload {
 export type Role = 'owner' | 'admin' | 'member' | 'guest' | 'moderator';
 
 export interface RoomMember {
-    user_id: string;
     room_id: string;
     role: Role;
+    joined_at: string;
+    user: {
+        user_id: string;
+        name: string;
+        email: string;
+        picture: string;
+        created_at: string;
+        is_oauth: boolean;
+    };
 }
 
 @Injectable({
