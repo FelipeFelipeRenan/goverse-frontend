@@ -1,93 +1,134 @@
 <div
-  class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 hover:shadow-lg transition-all duration-200 hover:border-blue-300 hover:ring-2 hover:ring-blue-100 relative group"
-  [class]="borderClass"
+    class="bg-white p-6 rounded-2xl shadow-md border border-gray-200 hover:shadow-lg transition-all duration-200 hover:border-blue-300 hover:ring-2 hover:ring-blue-100 relative group"
+    [class]="borderClass"
 >
-  <div class="flex items-start justify-between mb-4">
-    <div class="flex items-center">
-      <div class="p-2 rounded-full" [class]="bgClass + ' group-hover:bg-opacity-80 transition-colors duration-200'">
-        <svg
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-          class="w-5 h-5"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M3 7h18M3 12h18M3 17h18"
-          ></path>
-        </svg>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <span class="text-xs px-2 py-0.5 rounded-full font-medium"
-            [class]="room.is_public ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'">
-        {{ room.is_public ? 'Pública' : 'Privada' }}
-      </span>
-
-      <!-- Botão de menu -->
-      <ng-container *ngIf="showActions">
-        <div class="relative">
-          <button
-            class="text-gray-500 hover:text-gray-800 transition-colors duration-200"
-            (click)="toggleMenu($event)"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
+    <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center">
+            <div
+                class="p-2 rounded-full"
+                [class]="
+                    bgClass +
+                    ' group-hover:bg-opacity-80 transition-colors duration-200'
+                "
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 6v.01M12 12v.01M12 18v.01"
-              />
-            </svg>
-          </button>
-
-          <div
-            *ngIf="showMenu"
-            class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
-          >
-            <button
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-150 flex items-center"
-              (click)="editRoom()"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-              </svg>
-              Editar sala
-            </button>
-            <button
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 transition-colors duration-150 flex items-center"
-              (click)="deleteRoom()"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-              </svg>
-              Excluir sala
-            </button>
-          </div>
+                <svg
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    class="w-5 h-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 7h18M3 12h18M3 17h18"
+                    ></path>
+                </svg>
+            </div>
         </div>
-      </ng-container>
+
+        <div class="flex items-center gap-2">
+            <span
+                class="text-xs px-2 py-0.5 rounded-full font-medium"
+                [class]="
+                    room.is_public
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-600'
+                "
+            >
+                {{ room.is_public ? "Pública" : "Privada" }}
+            </span>
+
+            <!-- Botão de menu -->
+            <ng-container *ngIf="showActions">
+                <div class="relative">
+                    <button
+                        class="text-gray-500 hover:text-gray-800 transition-colors duration-200"
+                        (click)="toggleMenu($event)"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M12 6v.01M12 12v.01M12 18v.01"
+                            />
+                        </svg>
+                    </button>
+
+                    <div
+                        *ngIf="showMenu"
+                        class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+                    >
+                        <button
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-150 flex items-center"
+                            (click)="editRoom()"
+                        >
+                            <svg
+                                class="w-4 h-4 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                            </svg>
+                            Editar sala
+                        </button>
+                        <button
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 transition-colors duration-150 flex items-center"
+                            (click)="deleteRoom()"
+                        >
+                            <svg
+                                class="w-4 h-4 mr-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                            </svg>
+                            Excluir sala
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
     </div>
-  </div>
 
-  <h4 class="text-lg font-bold text-gray-800 truncate group-hover:text-blue-600 transition-colors duration-200">
-    {{ room.room_name || 'Sala sem nome' }}
-  </h4>
+    <h4
+        class="text-lg font-bold text-gray-800 truncate group-hover:text-blue-600 transition-colors duration-200"
+    >
+        {{ room.room_name || "Sala sem nome" }}
+    </h4>
 
-  <p class="text-sm text-gray-600 mt-2 line-clamp-3">
-    {{ room.room_description || 'Sem descrição.' }}
-  </p>
-
-  <div class="mt-4 flex items-center justify-between">
-    <p class="text-xs text-gray-500">
-      <span class="font-medium">{{ room.member_count }}</span>/{{ room.max_members }} membros
+    <p class="text-sm text-gray-600 mt-2 line-clamp-3">
+        {{ room.room_description || "Sem descrição." }}
     </p>
-  </div>
+
+    <div class="mt-4 flex items-center justify-between">
+        <p class="text-xs text-gray-500">
+            <span class="font-medium">{{ room.member_count }}</span
+            >/{{ room.max_members }} membros
+        </p>
+    </div>
+    <button
+        (click)="goToMembers()"
+        class="text-sm text-blue-600 hover:underline"
+    >
+        Gerenciar membros
+    </button>
 </div>

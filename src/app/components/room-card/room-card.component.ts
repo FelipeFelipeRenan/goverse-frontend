@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Room } from '../../services/room.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-room-card',
@@ -19,6 +20,7 @@ export class RoomCardComponent {
     @Output() onEdit = new EventEmitter<Room>();
 
     @Input() showMenu = false;
+    constructor(private router: Router) {}
 
     get borderClass() {
         return this.color === 'blue'
@@ -55,5 +57,9 @@ export class RoomCardComponent {
         this.onDelete.emit(this.room.room_id);
 
         this.closeMenu();
+    }
+
+    goToMembers(){
+        this.router.navigate([`/rooms/${this.room.room_id}/members`])
     }
 }
