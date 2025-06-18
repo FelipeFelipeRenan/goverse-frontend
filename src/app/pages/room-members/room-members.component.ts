@@ -5,6 +5,7 @@ import { Role, RoomMember, RoomService } from '../../services/room.service';
 
 @Component({
     selector: 'app-room-members',
+    standalone: true,
     imports: [CommonModule],
     templateUrl: './room-members.component.html',
     styleUrl: './room-members.component.css',
@@ -12,7 +13,12 @@ import { Role, RoomMember, RoomService } from '../../services/room.service';
 export class RoomMembersComponent implements OnInit {
     roomId!: string;
     members: RoomMember[] = [];
+    filteredMembers: RoomMember[] = [];
     isLoading = true;
+    currentPage = 1;
+    itemsPerPage = 10;
+    totalPages = 1;
+    searchQuery = '';
 
     constructor(
         private route: ActivatedRoute,
@@ -34,6 +40,10 @@ export class RoomMembersComponent implements OnInit {
         this.roomService.getMembers(this.roomId).subscribe({
             next: (data) => {
                 this.members = data;
+                this.filteredMembers = [...data];
+                this.totalPages = Math.ceil(
+                    this.members.length / this.itemsPerPage
+                );
                 this.isLoading = false;
             },
             error: (err) => {
@@ -50,6 +60,10 @@ export class RoomMembersComponent implements OnInit {
                 this.members = this.members.filter(
                     (m) => m.user.user_id !== userId
                 );
+                this.filteredMembers = this.filteredMembers.filter(
+                    (m) => m.user.user_id !== userId
+                );
+                this.updatePagination();
             },
             error: (err) => {
                 alert('Erro ao remover membro');
@@ -70,11 +84,66 @@ export class RoomMembersComponent implements OnInit {
                         (m) => m.user.user_id === userId
                     );
                     if (member) member.role = newRole;
+
+                    const filteredMember = this.filteredMembers.find(
+                        (m) => m.user.user_id === userId
+                    );
+                    if (filteredMember) filteredMember.role = newRole;
                 },
                 error: (err) => {
                     console.error('Erro ao atualizar role:', err);
+                    // Reverte a seleção no UI
+                    select.value =
+                        this.members.find((m) => m.user.user_id === userId)
+                            ?.role || 'member';
                     alert('Não foi possível atualizar a função do membro.');
                 },
             });
+    }
+
+    onSearch(event: Event) {
+        const input = event.target as HTMLInputElement;
+        this.searchQuery = input.value.toLowerCase();
+
+        if (!this.searchQuery) {
+            this.filteredMembers = [...this.members];
+        } else {
+            this.filteredMembers = this.members.filter(
+                (member) =>
+                    member.user.name.toLowerCase().includes(this.searchQuery) ||
+                    member.user.email.toLowerCase().includes(this.searchQuery)
+            ); // Faltava este parêntese de fechamento
+        }
+
+        this.currentPage = 1;
+        this.updatePagination();
+    }
+    nextPage() {
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+        }
+    }
+
+    previousPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+        }
+    }
+
+    private updatePagination() {
+        this.totalPages = Math.ceil(
+            this.filteredMembers.length / this.itemsPerPage
+        );
+        if (this.currentPage > this.totalPages && this.totalPages > 0) {
+            this.currentPage = this.totalPages;
+        }
+    }
+
+    get paginatedMembers(): RoomMember[] {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        return this.filteredMembers.slice(
+            startIndex,
+            startIndex + this.itemsPerPage
+        );
     }
 }
