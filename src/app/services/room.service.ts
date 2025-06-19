@@ -93,9 +93,10 @@ export class RoomService {
         );
     }
 
-    addMember(roomId: string, userId: string): Observable<void> {
+    addMember(roomId: string, userId: string, role: Role): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/rooms/${roomId}/members`, {
             user_id: userId,
+            role: role,
         });
     }
 

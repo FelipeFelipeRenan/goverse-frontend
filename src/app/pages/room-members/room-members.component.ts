@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Role, RoomMember, RoomService } from '../../services/room.service';
+import { AddMembersModalComponent } from '../../components/add-members-modal/add-members-modal.component';
 
 @Component({
     selector: 'app-room-members',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, AddMembersModalComponent],
     templateUrl: './room-members.component.html',
     styleUrl: './room-members.component.css',
 })
@@ -19,6 +20,8 @@ export class RoomMembersComponent implements OnInit {
     itemsPerPage = 10;
     totalPages = 1;
     searchQuery = '';
+    
+    showAddMemberModal = false
 
     constructor(
         private route: ActivatedRoute,
@@ -145,5 +148,17 @@ export class RoomMembersComponent implements OnInit {
             startIndex,
             startIndex + this.itemsPerPage
         );
+    }
+
+    onAddMember(data: {user_id:string; role: Role}){
+        this.roomService.addMember(this.roomId, data.user_id, data.role).subscribe({
+            next: () =>{
+                this.fetchMembers()
+            },
+            error: (err) =>{
+                console.error('Erro ao adicionar membro: ', err)
+                alert('Erro ao adicionar membro')
+            }
+        })
     }
 }

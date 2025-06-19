@@ -1,1 +1,25 @@
-<p>add-members-modal works!</p>
+<div class="modal-content">
+  <h3 class="text-lg font-semibold mb-2">Adicionar membro</h3>
+
+  <form (ngSubmit)="submit()" class="flex flex-col gap-2">
+    <input
+      type="text"
+      [(ngModel)]="userId"
+      name="userId"
+      placeholder="ID do usuário"
+      required
+      class="px-3 py-2 border rounded"
+    />
+
+    <select [(ngModel)]="role" name="role" class="px-3 py-2 border rounded">
+      <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+    </select>
+
+    <button
+      type="submit"
+      class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    >
+      Adicionar
+    </button>
+  </form>
+</div>
