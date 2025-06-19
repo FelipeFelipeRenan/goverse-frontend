@@ -17,7 +17,7 @@ export class AddMembersModalComponent {
     userId = '';
     role: Role = 'member';
 
-    roles: Role[] = ['owner', 'admin', 'moderator', 'member', 'guest']
+    roles: Role[] = ['owner', 'admin', 'moderator', 'member', 'guest'];
 
     submit() {
         if (!this.userId.trim()) return;
@@ -26,5 +26,20 @@ export class AddMembersModalComponent {
 
     cancel() {
         this.close.emit();
+    }
+
+    closeModal() {
+        this.close.emit();
+    }
+
+    getRoleLabel(role: string): string {
+        const roleLabels: Record<string, string> = {
+            owner: 'Dono',
+            admin: 'Administrador',
+            moderator: 'Moderador',
+            member: 'Membro',
+            guest: 'Convidado',
+        };
+        return roleLabels[role] || role;
     }
 }

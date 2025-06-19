@@ -1,32 +1,48 @@
 <div class="p-6 bg-gray-50 rounded-xl">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Membros da Sala</h2>
-        <button
-            class="bg-green-600 text-white px-4 py-2 rounded"
-            (click)="showAddMemberModal = true"
-        >
-            + Adicionar Membro
-        </button>
-        <div class="relative">
-            <input
-                type="text"
-                placeholder="Buscar membros..."
-                class="px-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                (input)="onSearch($event)"
-            />
-            <svg
-                class="w-5 h-5 text-gray-400 absolute right-3 top-2.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+        <div class="flex items-center gap-4">
+            <button
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                (click)="showAddMemberModal = true"
             >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                <svg
+                    class="w-5 h-5 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                </svg>
+                Adicionar Membro
+            </button>
+
+            <div class="relative">
+                <input
+                    type="text"
+                    placeholder="Buscar membros..."
+                    class="px-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    (input)="onSearch($event)"
                 />
-            </svg>
+                <svg
+                    class="w-5 h-5 text-gray-400 absolute right-3 top-2.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                </svg>
+            </div>
         </div>
     </div>
 
@@ -42,7 +58,10 @@
     </div>
 
     <!-- Estado vazio -->
-    <div *ngIf="!isLoading && members.length === 0" class="text-center py-12">
+    <div
+        *ngIf="!isLoading && filteredMembers.length === 0"
+        class="text-center py-12"
+    >
         <svg
             class="mx-auto h-12 w-12 text-gray-400"
             fill="none"
@@ -62,20 +81,27 @@
         <p class="mt-1 text-gray-500">
             Parece que esta sala ainda não tem membros.
         </p>
+        <button
+            class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            (click)="showAddMemberModal = true"
+        >
+            Adicionar Primeiro Membro
+        </button>
     </div>
 
     <!-- Lista de membros -->
-    <div class="grid gap-4" *ngIf="!isLoading && members.length > 0">
+    <div class="grid gap-4" *ngIf="!isLoading && filteredMembers.length > 0">
         <div
-            *ngFor="let member of members"
+            *ngFor="let member of paginatedMembers"
             class="flex items-center bg-white shadow-sm p-4 rounded-xl border border-gray-100 hover:shadow-md transition-all duration-200"
         >
             <img
-                [src]="member.user.picture || 'assets/default-avatar.png'"
-                alt="Perfil"
+                [src]="member.user.picture || 'defaultavatar.jpg'"
+                alt="Perfil de {{ member.user.name }}"
                 class="w-12 h-12 rounded-full mr-4 border-2 border-white shadow"
-                onerror="this.src='assets/default-avatar.png'"
+                onerror="this.onerror=null;this.src='defaultavatar.jpg'"
             />
+
             <div class="flex-1 min-w-0">
                 <div class="text-lg font-semibold text-gray-800 truncate">
                     {{ member.user.name }}
@@ -128,7 +154,7 @@
 
     <!-- Paginação -->
     <div
-        *ngIf="!isLoading && members.length > 0"
+        *ngIf="!isLoading && filteredMembers.length > 0"
         class="flex justify-between items-center mt-6"
     >
         <button
@@ -149,6 +175,8 @@
             Próxima
         </button>
     </div>
+
+    <!-- Modal de Adicionar Membros -->
     <app-add-members-modal
         *ngIf="showAddMemberModal"
         (close)="showAddMemberModal = false"
