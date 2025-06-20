@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface CreateUserPayload {
-    name: string;
+    username: string;
     email: string;
     password: string;
 }
@@ -17,6 +17,6 @@ export class UserService {
     constructor(private http: HttpClient) {}
 
     createUser(userData: CreateUserPayload): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/auth/register`, userData);
+        return this.http.post<void>(`${this.baseUrl}/user`, userData);
     }
 }

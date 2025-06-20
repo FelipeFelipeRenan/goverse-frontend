@@ -51,7 +51,7 @@ export class SignupComponent {
         this.loading = true;
 
         const payload: CreateUserPayload = {
-            name: this.signupForm.value.name,
+            username: this.signupForm.value.name,
             email: this.signupForm.value.email,
             password: this.signupForm.value.password
         };
