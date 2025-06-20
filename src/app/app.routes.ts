@@ -12,4 +12,18 @@ export const routes: Routes = [
     },
     { path: '', redirectTo: 'login', pathMatch: 'full' },
     { path: 'rooms/:roomID/members', component: RoomMembersComponent },
+    {
+        path: 'signup',
+        loadComponent: () =>
+            import('./pages/signup/signup.component').then(
+                (m) => m.SignupComponent
+            ),
+    },
+    {
+        path: 'debug',
+        loadComponent: () =>
+            import('./pages/signup/signup.component').then(
+                (m) => m.SignupComponent
+            ),
+    },
 ];
