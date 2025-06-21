@@ -1,0 +1,9 @@
+services:
+  goverse-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goverse-frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
