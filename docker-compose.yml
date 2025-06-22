@@ -1,9 +1,13 @@
 services:
   goverse-frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     container_name: goverse-frontend
     ports:
-      - "80:80"
-    restart: unless-stopped
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
