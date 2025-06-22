@@ -153,6 +153,7 @@ export class RoomMembersComponent implements OnInit {
     onAddMember(data: {user_id:string; role: Role}){
         this.roomService.addMember(this.roomId, data.user_id, data.role).subscribe({
             next: () =>{
+                this.showAddMemberModal = false
                 this.fetchMembers()
             },
             error: (err) =>{
