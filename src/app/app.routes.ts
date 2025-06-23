@@ -19,11 +19,11 @@ export const routes: Routes = [
                 (m) => m.SignupComponent
             ),
     },
+    
     {
-        path: 'debug',
-        loadComponent: () =>
-            import('./pages/signup/signup.component').then(
-                (m) => m.SignupComponent
-            ),
-    },
+        path: 'profile',
+        loadComponent: () => import('./pages/profile/profile.component').then(
+            (m) => m.ProfileComponent
+        )
+    }
 ];

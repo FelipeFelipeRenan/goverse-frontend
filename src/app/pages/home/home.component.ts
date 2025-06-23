@@ -125,4 +125,8 @@ export class HomeComponent implements OnInit {
         this.editedRoomId = null;
         this.roomBeingEdited = null;
     }
+
+    toProfilePage(){
+        this.router.navigate(['/profile'])
+    }
 }

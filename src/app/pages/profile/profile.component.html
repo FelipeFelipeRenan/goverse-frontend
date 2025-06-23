@@ -1,0 +1,31 @@
+<div class="max-w-xl mx-auto mt-12 p-6 bg-white rounded-xl shadow">
+    <div *ngIf="isLoading" class="text-center">Carregando perfil...</div>
+    <div *ngIf="error" class="text-red-600">{{ error }}</div>
+
+    <div *ngIf="user" class="flex flex-col items-center text-center">
+        <img
+            [src]="user.picture || '/defaultavatar.jpg'"
+            alt="Foto de perfil"
+            class="w-24 h-24 rounded-full border mb-4"
+            onerror="this.src='/default-avatar.jpg'"
+        />
+        <h2 class="text-xl font-semibold">{{ user.name }}</h2>
+        <p class="text-gray-500">{{ user.email }}</p>
+        <p class="text-sm text-gray-400">
+            Criado em: {{ user.created_at | date: 'dd/MM/yyyy' }}
+        </p>
+        <p class="text-sm mt-2">
+            Tipo de conta:
+            <span class="font-medium">{{
+                user.is_oauth ? 'OAuth (Google)' : 'Senha'
+            }}</span>
+        </p>
+
+        <button
+            (click)="logout()"
+            class="mt-6 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+            Sair da conta
+        </button>
+    </div>
+</div>

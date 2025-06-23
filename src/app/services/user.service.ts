@@ -19,4 +19,8 @@ export class UserService {
     createUser(userData: CreateUserPayload): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/user`, userData);
     }
+
+    getUserById(id: string): Observable<any>{
+        return this.http.get<any>(`${this.baseUrl}/user/${id}`)
+    }
 }
