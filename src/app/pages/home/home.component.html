@@ -120,11 +120,11 @@
             </div>
 
             <div
-                *ngIf="ownedRooms.length; else noOwned"
+                *ngIf="ownedRooms && ownedRooms.length > 0; else noOwned"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
             >
                 <app-room-card
-                    *ngFor="let room of ownedRooms"
+                    *ngFor="let room of ownedRooms || []"
                     [room]="room"
                     color="blue"
                     [showActions]="true"

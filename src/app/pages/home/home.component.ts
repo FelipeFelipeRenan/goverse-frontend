@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit {
 
         this.roomService.deleteRoom(roomId).subscribe({
             next: () => {
-                this.ownedRooms = this.ownedRooms.filter(
+                this.ownedRooms = this.ownedRooms?.filter(
                     (room) => room.room_id !== roomId
                 );
                 alert('Sala excluída com sucesso!');
