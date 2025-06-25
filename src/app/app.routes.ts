@@ -19,11 +19,20 @@ export const routes: Routes = [
                 (m) => m.SignupComponent
             ),
     },
-    
+
     {
         path: 'profile',
-        loadComponent: () => import('./pages/profile/profile.component').then(
-            (m) => m.ProfileComponent
-        )
-    }
+        loadComponent: () =>
+            import('./pages/profile/profile.component').then(
+                (m) => m.ProfileComponent
+            ),
+    },
+
+    {
+        path: 'oauth/callback',
+        loadComponent: () =>
+            import('./pages/oauth-callback/oauth-callback.component').then(
+                (m) => m.OauthCallbackComponent
+            ),
+    },
 ];
