@@ -48,4 +48,8 @@ export class ProfileComponent implements OnInit{
         this.authService.logout()
         this.router.navigate(['/login'])
     }
+
+    toHomePage(){
+        this.router.navigate(['/home'])
+    }
 }
