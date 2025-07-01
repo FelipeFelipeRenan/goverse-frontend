@@ -28,8 +28,6 @@ export class LoginComponent {
             type: 'password',
         };
 
-        console.log('Payload enviado:', loginPayload);
-
         this.authService.login(loginPayload).subscribe({
             next: (response) => {
                 this.authService.saveToken(response.token);
