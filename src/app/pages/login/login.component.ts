@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.css'],
 })
-export class LoginComponent  {
+export class LoginComponent {
     email = '';
     password = '';
     errorMessage = '';
@@ -43,9 +43,24 @@ export class LoginComponent  {
     }
 
     onGoogleLogin() {
-        alert('Login com Google - implementar fluxo OAuth');
-        // Aqui você pode iniciar o fluxo OAuth com seu backend, redirecionar para o endpoint ou abrir popup
+        const popup = window.open(
+            'http://localhost:8088/oauth/google/login',
+            '_blank',
+            'width=500,height=600'
+        );
+
+        const listener = (event: MessageEvent) => {
+            if (event.data?.type === 'oauth-success' && event.data?.token) {
+                this.authService.saveToken(event.data.token);
+                window.removeEventListener('message', listener);
+                popup?.close();
+                this.router.navigate(['/home']);
+            }
+        };
+
+        window.addEventListener('message', listener);
     }
+
     toCreateUser() {
         this.router.navigate(['signup']);
     }
