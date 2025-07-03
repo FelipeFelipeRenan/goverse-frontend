@@ -42,7 +42,7 @@ export class LoginComponent {
 
     onGoogleLogin() {
         const popup = window.open(
-            'http://localhost:8088/oauth/google/login',
+            'http://localhost/oauth/google/login',
             '_blank',
             'width=500,height=600'
         );
