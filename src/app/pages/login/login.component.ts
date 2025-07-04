@@ -41,22 +41,21 @@ export class LoginComponent {
     }
 
     onGoogleLogin() {
-        const popup = window.open(
-            'http://localhost/oauth/google/login',
-            '_blank',
-            'width=500,height=600'
-        );
-
         const listener = (event: MessageEvent) => {
             if (event.data?.type === 'oauth-success' && event.data?.token) {
                 this.authService.saveToken(event.data.token);
                 window.removeEventListener('message', listener);
-                popup?.close();
                 this.router.navigate(['/home']);
             }
         };
 
         window.addEventListener('message', listener);
+
+        const popup = window.open(
+            'http://localhost/oauth/google/login',
+            '_blank',
+            'width=500,height=600'
+        );
     }
 
     toCreateUser() {
