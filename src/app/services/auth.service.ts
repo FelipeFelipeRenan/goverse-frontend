@@ -23,7 +23,7 @@ interface DecodedToken {
     providedIn: 'root',
 })
 export class AuthService {
-    private readonly API_URL = 'http://localhost:80';
+    private readonly API_URL = 'http://localhost:8080';
     constructor(private http: HttpClient) {}
 
     login(data: LoginRequest): Observable<LoginResponse> {
