@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { jwtDecode } from 'jwt-decode';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+
+export interface User {
+    id: string;
+    username: string;
+    email: string;
+    picture?: string;
+    created_at: string; // O JSON geralmente converte datas para string
+    is_oauth: boolean;
+}
 
 interface LoginRequest {
     email: string;
@@ -10,51 +18,50 @@ interface LoginRequest {
 }
 
 interface LoginResponse {
-    token: string;
-}
-
-interface DecodedToken {
-    user_id: string;
-    user_email: string;
-    exp: number;
+    user: User;
+    csrf_token: string;
 }
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    private readonly API_URL = 'http://localhost:8080';
+    private readonly API_URL = 'http://localhost';
+
+    private userSubject = new BehaviorSubject<User | null>(null);
+
+    public currentUser$ = this.userSubject.asObservable();
+
+    private csrfToken: string | null = null;
+
     constructor(private http: HttpClient) {}
 
     login(data: LoginRequest): Observable<LoginResponse> {
-        return this.http.post<LoginResponse>(
-            `${this.API_URL}/auth/login`,
-            data
+        return this.http
+            .post<LoginResponse>(`${this.API_URL}/auth/login`, data)
+            .pipe(
+                tap((response) => {
+                    this.csrfToken = response.csrf_token;
+
+                    this.userSubject.next(response.user);
+                })
+            );
+    }
+
+    logout(): Observable<any> {
+        return this.http.post(`${this.API_URL}/auth/logout`, {}).pipe(
+            tap(() => {
+                this.csrfToken = null;
+                this.userSubject.next(null);
+            })
         );
     }
 
-    saveToken(token: string) {
-        localStorage.setItem('access_token', token);
+    public getCurrentUser(): User | null {
+        return this.userSubject.value;
     }
 
-    getToken(): string | null {
-        return localStorage.getItem('access_token');
-    }
-
-    logout() {
-        localStorage.removeItem('access_token');
-    }
-
-    getUserFromToken(): DecodedToken | null {
-        const token = this.getToken();
-
-        if(!token) return null;
-
-        try{
-            return jwtDecode<DecodedToken>(token)
-        } catch(error){
-            console.error('Erro ao decodificar token: ', error)
-            return null
-        }
+    public getCsrfToken(): string | null {
+        return this.csrfToken;
     }
 }

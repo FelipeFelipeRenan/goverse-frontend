@@ -49,7 +49,7 @@ export interface RoomMember {
     providedIn: 'root',
 })
 export class RoomService {
-    private baseUrl = 'http://localhost:8080';
+    private baseUrl = 'http://localhost';
 
     constructor(private http: HttpClient) {}
 

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AuthService, User } from '../../services/auth.service'; // Importe a interface User
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs'; // Importe o Subscription
 
 @Component({
   selector: 'app-profile',
@@ -11,45 +12,60 @@ import { Router } from '@angular/router';
   styleUrl: './profile.component.css',
   standalone: true,
 })
-export class ProfileComponent implements OnInit{
-    user: any = null;
+export class ProfileComponent implements OnInit, OnDestroy {
+    user: User | null = null; // Use a interface User para tipagem forte
     isLoading = true;
     error = '';
-
+    private userSubscription?: Subscription;
 
     constructor(
         private authService: AuthService,
-        private userService: UserService,
+        // O UserService pode não ser mais necessário aqui se o AuthService já fornecer os dados
         private router: Router
     ){}
 
     ngOnInit(): void {
-        const userId = this.authService.getUserFromToken()?.user_id;
-        if(!userId){
-            console.log(userId)
-            this.router.navigate(['/login'])
-            return
-        }
-
-        this.userService.getUserById(userId).subscribe({
+        // Se inscreve para receber o usuário atual do AuthService
+        this.userSubscription = this.authService.currentUser$.subscribe({
             next: (data) => {
-                this.user = data;
+                if (data) {
+                    this.user = data;
+                } else {
+                    // Se não houver usuário no estado, redireciona para o login
+                    this.router.navigate(['/login']);
+                }
                 this.isLoading = false;
             },
             error: (err) => {
                 this.error = "Erro ao carregar perfil!";
-                console.error(err)
-                this.isLoading = false
+                console.error(err);
+                this.isLoading = false;
             }
-        })
-
+        });
     }
+
+    ngOnDestroy(): void {
+        // Limpa a inscrição para evitar vazamentos de memória
+        if (this.userSubscription) {
+            this.userSubscription.unsubscribe();
+        }
+    }
+
     logout(){
-        this.authService.logout()
-        this.router.navigate(['/login'])
+        this.authService.logout().subscribe({
+            next: () => {
+                // Apenas navega após o logout no backend ser bem-sucedido
+                this.router.navigate(['/login']);
+            },
+            error: (err) => {
+                console.error("Erro ao fazer logout:", err);
+                // Mesmo com erro, força a navegação para a tela de login
+                this.router.navigate(['/login']);
+            }
+        });
     }
 
     toHomePage(){
-        this.router.navigate(['/home'])
+        this.router.navigate(['/home']);
     }
 }

@@ -27,12 +27,4 @@ export const routes: Routes = [
                 (m) => m.ProfileComponent
             ),
     },
-
-    {
-        path: 'oauth/callback',
-        loadComponent: () =>
-            import('./pages/oauth-callback/oauth-callback.component').then(
-                (m) => m.OauthCallbackComponent
-            ),
-    },
 ];
