@@ -12,7 +12,7 @@ export interface CreateUserPayload {
     providedIn: 'root',
 })
 export class UserService {
-    private baseUrl = 'http://localhost'; // ou apenas /auth se estiver pelo gateway
+    private baseUrl = 'http://localhost';
 
     constructor(private http: HttpClient) {}
 
