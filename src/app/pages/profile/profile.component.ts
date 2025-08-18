@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs'; // Importe o Subscription
 
 @Component({
-  selector: 'app-profile',
-  imports: [CommonModule],
-  templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css',
-  standalone: true,
+    selector: 'app-profile',
+    imports: [CommonModule],
+    templateUrl: './profile.component.html',
+    styleUrl: './profile.component.css',
+    standalone: true,
 })
 export class ProfileComponent implements OnInit, OnDestroy {
     user: User | null = null; // Use a interface User para tipagem forte
@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         // O UserService pode não ser mais necessário aqui se o AuthService já fornecer os dados
         private router: Router
-    ){}
+    ) {}
 
     ngOnInit(): void {
         // Se inscreve para receber o usuário atual do AuthService
@@ -37,10 +37,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
             },
             error: (err) => {
-                this.error = "Erro ao carregar perfil!";
+                this.error = 'Erro ao carregar perfil!';
                 console.error(err);
                 this.isLoading = false;
-            }
+            },
         });
     }
 
@@ -51,21 +51,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
     }
 
-    logout(){
+    logout() {
         this.authService.logout().subscribe({
             next: () => {
-                // Apenas navega após o logout no backend ser bem-sucedido
                 this.router.navigate(['/login']);
             },
             error: (err) => {
-                console.error("Erro ao fazer logout:", err);
-                // Mesmo com erro, força a navegação para a tela de login
+                console.error('Erro ao fazer logout:', err);
                 this.router.navigate(['/login']);
-            }
+            },
         });
     }
 
-    toHomePage(){
+    toHomePage() {
         this.router.navigate(['/home']);
     }
 }

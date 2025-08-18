@@ -8,13 +8,10 @@ import { CredentialsInterceptor } from './app/credentials.interceptor';
 import { CsrfInterceptor } from './app/csrf_interceptor';
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([
-        CredentialsInterceptor, // Adiciona 'withCredentials: true'
-        CsrfInterceptor       // Adiciona o cabeçalho X-CSRF-TOKEN
-      ])
-    ),
-  ]
+    providers: [
+        provideRouter(routes),
+        provideHttpClient(
+            withInterceptors([CredentialsInterceptor, CsrfInterceptor])
+        ),
+    ],
 });
