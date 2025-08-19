@@ -1,39 +1,29 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { SignupComponent } from './pages/signup/signup.component';
 import { RoomMembersComponent } from './pages/room-members/room-members.component';
 import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
-
+    { path: 'signup', component: SignupComponent },
     {
         path: 'home',
-        loadComponent: () =>
-            import('./pages/home/home.component').then((m) => m.HomeComponent),
-        canActivate: [authGuard],
+        component: HomeComponent,
+        canActivate: [authGuard], // <-- APLIQUE A GUARDA
     },
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
-    {
-        path: 'rooms/:roomID/members',
-        component: RoomMembersComponent,
-        canActivate: [authGuard],
-    },
-    {
-        path: 'signup',
-        loadComponent: () =>
-            import('./pages/signup/signup.component').then(
-                (m) => m.SignupComponent
-            ),
-    },
-
     {
         path: 'profile',
-        loadComponent: () =>
-            import('./pages/profile/profile.component').then(
-                (m) => m.ProfileComponent
-            ),
-        canActivate: [authGuard],
+        component: ProfileComponent,
+        canActivate: [authGuard], // <-- APLIQUE A GUARDA
+    },
+    {
+        path: 'rooms/:id/members',
+        component: RoomMembersComponent,
+        canActivate: [authGuard], // <-- APLIQUE A GUARDA
     },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: '**', redirectTo: '/login' }, // Rota coringa
+    { path: '**', redirectTo: '/login' }, // Rota coringa para qualquer outra URL
 ];

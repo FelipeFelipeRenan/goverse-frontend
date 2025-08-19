@@ -61,9 +61,19 @@ export class HomeComponent implements OnInit {
         });
     }
 
+    // felipefeliperenan/goverse-frontend/goverse-frontend-23444aa58e9649684636f17a661a1c66bbcfb82c/src/app/pages/home/home.component.ts
+
     logout(): void {
-        this.authService.logout();
-        this.router.navigate(['/login']);
+        this.authService.logout().subscribe({
+            next: () => {
+                this.router.navigate(['/login']);
+            },
+            error: (err) => {
+                console.error('Erro ao fazer logout:', err);
+                // Mesmo em caso de erro, redireciona para o login
+                this.router.navigate(['/login']);
+            },
+        });
     }
 
     onCreateRoom(): void {
@@ -99,9 +109,8 @@ export class HomeComponent implements OnInit {
 
     onEditRoom(room: Room) {
         this.editedRoomId = room.room_id;
-        this.roomBeingEdited = { ...room };;
-          console.log('Setando roomBeingEdited:', this.roomBeingEdited); // debug
-
+        this.roomBeingEdited = { ...room };
+        console.log('Setando roomBeingEdited:', this.roomBeingEdited); // debug
     }
 
     onUpdateRoom(updates: Partial<Room>) {
@@ -126,7 +135,7 @@ export class HomeComponent implements OnInit {
         this.roomBeingEdited = null;
     }
 
-    toProfilePage(){
-        this.router.navigate(['/profile'])
+    toProfilePage() {
+        this.router.navigate(['/profile']);
     }
 }

@@ -6,7 +6,6 @@ export const CsrfInterceptor: HttpInterceptorFn = (req, next) => {
     const authService = inject(AuthService);
     const csrfToken = authService.getCsrfToken();
 
-    // Adiciona o cabeçalho CSRF apenas em requisições que alteram dados
     if (csrfToken && req.method !== 'GET' && req.method !== 'HEAD') {
         const csrfReq = req.clone({
             setHeaders: {

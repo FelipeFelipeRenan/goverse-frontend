@@ -54,11 +54,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     logout() {
         this.authService.logout().subscribe({
             next: () => {
-                this.router.navigate(['/login']);
+                // Força um recarregamento completo a partir da página de login.
+                // Isso quebra a condição de corrida com a AuthGuard e garante um estado limpo.
+                window.location.href = '/login';
             },
             error: (err) => {
                 console.error('Erro ao fazer logout:', err);
-                this.router.navigate(['/login']);
+                window.location.href = '/login'; // Força o redirecionamento mesmo em caso de erro
             },
         });
     }
