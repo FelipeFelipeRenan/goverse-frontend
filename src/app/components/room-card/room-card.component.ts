@@ -20,6 +20,7 @@ export class RoomCardComponent {
     @Output() onEdit = new EventEmitter<Room>();
 
     @Input() showMenu = false;
+
     constructor(private router: Router) {}
 
     get borderClass() {
@@ -59,7 +60,17 @@ export class RoomCardComponent {
         this.closeMenu();
     }
 
-    goToMembers(){
-        this.router.navigate([`/rooms/${this.room.room_id}/members`])
+    goToMembers() {
+        this.router.navigate([`/rooms/${this.room.room_id}/members`]);
+    }
+
+    goToRoom(roomId: string) {
+        // Evita que o clique propague para o menu
+        if (this.showMenu) {
+            this.showMenu = false;
+            return;
+        }
+        console.log(`Navegando para a sala: ${roomId}`);
+        this.router.navigate(['/rooms', roomId]);
     }
 }

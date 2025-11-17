@@ -5,6 +5,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { RoomMembersComponent } from './pages/room-members/room-members.component';
 import { authGuard } from './auth.guard';
+import { RoomComponent } from './pages/room/room.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -20,10 +21,16 @@ export const routes: Routes = [
         canActivate: [authGuard], // <-- APLIQUE A GUARDA
     },
     {
+        path: 'rooms/:id', // A rota para a sala
+        component: RoomComponent,
+        canActivate: [authGuard], 
+    },
+    {
         path: 'rooms/:id/members',
         component: RoomMembersComponent,
         canActivate: [authGuard], // <-- APLIQUE A GUARDA
     },
+
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: '**', redirectTo: '/login' }, // Rota coringa para qualquer outra URL
 ];
