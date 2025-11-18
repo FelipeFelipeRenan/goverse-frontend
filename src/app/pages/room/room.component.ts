@@ -5,7 +5,6 @@ import {
     OnInit,
     ViewChild,
     ElementRef,
-    AfterViewChecked,
     ChangeDetectorRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -17,12 +16,12 @@ import { AuthService, User } from '../../services/auth.service';
 
 @Component({
     selector: 'app-room',
-    standalone: true, // <-- ADICIONADO
+    standalone: true,
     imports: [CommonModule, FormsModule],
     templateUrl: './room.component.html',
-    styleUrls: ['./room.component.css'], // <-- Corrigido de 'styleUrl'
+    styleUrls: ['./room.component.css'],
 })
-export class RoomComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class RoomComponent implements OnInit, OnDestroy {
     @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
 
     public messages: Message[] = [];
@@ -30,12 +29,13 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     public roomName: string = 'Carregando...';
     public isLoadingHistory: boolean = true;
     public typingUser: string | null = null;
-    public errorMessage: string | null = null; // Para erros de API
+    public errorMessage: string | null = null;
 
-    private roomId: string | null = null;
-    private currentUser: User | null = null;
-    private socketSubscription: Subscription | null = null;
-
+    public roomId: string | null = null;
+    public currentUser: User | null = null;
+    
+    // Subject para gerenciar o unsubscribe de tudo de uma vez
+    private destroy$ = new Subject<void>();
     private typingSubject = new Subject<void>();
     private stopTypingTimer = new Subject<void>();
 
@@ -44,118 +44,110 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewChecked {
         private router: Router,
         private chatService: ChatService,
         private authService: AuthService,
-        private cdr: ChangeDetectorRef // Para forçar a detecção de mudanças
+        private cdr: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
-        console.log('RoomComponent ngOnInit executado!');
-        this.authService.currentUser$.subscribe(
-            (user) => (this.currentUser = user)
-        ); // --- CORREÇÃO DO BUG CRÍTICO ---
+        // 1. Correção Memory Leak: Usando takeUntil
+        this.authService.currentUser$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((user) => (this.currentUser = user));
 
-        this.roomId = this.route.snapshot.paramMap.get('id'); // <-- Corrigido de 'get' para 'id'
+        this.roomId = this.route.snapshot.paramMap.get('id');
 
         if (this.roomId) {
-            console.log(`Buscando dados para a sala: ${this.roomId}`);
-            this.roomName = `Sala ${this.roomId}`; // TODO: Pegar o nome real // Busca o historico de mensagens
+            this.roomName = `Sala ${this.roomId}`; 
 
+            // Carrega histórico
             this.chatService
                 .getHistory(this.roomId)
                 .pipe(
+                    takeUntil(this.destroy$), // Garante limpeza
                     catchError((err) => {
-                        console.error('Falha ao buscar histórico:', err);
-                        this.errorMessage =
-                            'Erro ao carregar histórico. Você pode não ter permissão para ver esta sala.';
+                        console.error('Erro:', err);
+                        this.errorMessage = 'Erro ao carregar histórico.';
                         this.isLoadingHistory = false;
-                        return EMPTY; // Para o fluxo
+                        return EMPTY;
                     })
                 )
                 .subscribe((history) => {
-                    console.log('Histórico recebido:', history);
                     this.messages = history;
                     this.isLoadingHistory = false;
-                    this.cdr.detectChanges(); // Força a UI a atualizar
+                    this.cdr.detectChanges();
+                    // 2. Correção Performance: Scroll só roda uma vez aqui
                     this.scrollToBottom('instant');
-                }); // Conecta ao websocket
+                });
 
-            this.chatService.connect(this.roomId); // "escuta" por novas mensagens do websocket
+            this.chatService.connect(this.roomId);
 
-            this.socketSubscription = this.chatService.onNewMessage().subscribe(
-                (newMessage) => this.handleNewMessage(newMessage),
-                (err) => console.error('Erro no WebSocket: ', err),
-                () => console.warn('WebSocket fechado')
-            );
+            this.chatService.onNewMessage()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(
+                    (newMessage) => this.handleNewMessage(newMessage),
+                    (err) => console.error('Erro WS:', err)
+                );
 
             this.setupTypingHandlers();
-        } else {
-            console.error('Nenhum ID de sala encontrado na URL!');
-            this.errorMessage = 'Nenhum ID de sala foi fornecido.';
-            this.isLoadingHistory = false;
         }
     }
 
-    ngAfterViewChecked(): void {
-        // Rola apenas se não estivermos no meio de um carregamento
-        if (!this.isLoadingHistory) {
-            this.scrollToBottom('smooth');
-        }
-    }
+    // Removemos o ngAfterViewChecked problemático
 
     scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
-        try {
-            if (this.myScrollContainer) {
-                this.myScrollContainer.nativeElement.scrollTo({
-                    top: this.myScrollContainer.nativeElement.scrollHeight,
-                    behavior: behavior,
-                });
-            }
-        } catch (err) {}
+        setTimeout(() => { // Timeout para garantir que o DOM atualizou
+            try {
+                if (this.myScrollContainer) {
+                    this.myScrollContainer.nativeElement.scrollTo({
+                        top: this.myScrollContainer.nativeElement.scrollHeight,
+                        behavior: behavior,
+                    });
+                }
+            } catch (err) {}
+        }, 100);
     }
 
     handleNewMessage(msg: Message): void {
-        console.log('Nova mensagem recebida:', msg);
-
-        if (
-            msg.type === 'TYPING_START' &&
-            msg.user_id !== this.currentUser?.id
-        ) {
+        if (msg.type === 'TYPING_START' && msg.user_id !== this.currentUser?.id) {
             this.typingUser = msg.username;
+            // Reinicia o timer de parar de digitar
+            this.stopTypingTimer.next(); 
             timer(3000)
                 .pipe(takeUntil(this.stopTypingTimer))
-                .subscribe(() => {
-                    this.typingUser = null;
-                });
+                .subscribe(() => this.typingUser = null);
+                
         } else if (msg.type === 'TYPING_STOP') {
+             if (this.typingUser === msg.username) {
+                this.typingUser = null;
+                this.stopTypingTimer.next();
+            }
+        } else if (msg.type === 'CHAT' || !msg.type) {
+            // Se for chat normal
+            this.messages.push(msg);
+            
+            // Se quem estava digitando mandou a msg, limpa o status
             if (this.typingUser === msg.username) {
                 this.typingUser = null;
                 this.stopTypingTimer.next();
             }
-        } else {
-            this.messages.push(msg);
-            if (
-                this.typingUser === msg.username &&
-                msg.user_id === this.currentUser?.id
-            ) {
-                this.typingUser = null;
-                this.stopTypingTimer.next();
-            }
+            
+            this.cdr.detectChanges();
+            // Scroll apenas quando chega mensagem nova
+            this.scrollToBottom('smooth');
         }
-        this.cdr.detectChanges(); // Força a UI a atualizar
     }
 
     setupTypingHandlers(): void {
-        this.typingSubject
-            .pipe(
-                switchMap(() => {
-                    this.chatService.sendMessage({
-                        type: 'TYPING_START',
-                        content: '',
-                        room_id: this.roomId || '',
-                    });
-                    return timer(2000); // Envia a cada 2s
-                })
-            )
-            .subscribe();
+        this.typingSubject.pipe(
+            takeUntil(this.destroy$),
+            switchMap(() => {
+                this.chatService.sendMessage({
+                    type: 'TYPING_START',
+                    content: '',
+                    room_id: this.roomId || '',
+                });
+                return timer(2000);
+            })
+        ).subscribe();
     }
 
     sendTypingEvent(): void {
@@ -171,7 +163,7 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewChecked {
             };
             this.chatService.sendMessage(msg);
             this.newMessageContent = '';
-            this.stopTypingTimer.next(); // Para o timer de "digitando"
+            this.stopTypingTimer.next();
             this.typingUser = null;
         }
     }
@@ -185,12 +177,19 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     ngOnDestroy(): void {
-        console.log('RoomComponent ngOnDestroy: Desconectando.');
         this.chatService.disconnect();
-        if (this.socketSubscription) {
-            this.socketSubscription.unsubscribe();
-        }
+        // Cancela todas as subscrições de uma vez
+        this.destroy$.next();
+        this.destroy$.complete();
         this.stopTypingTimer.complete();
-        this.typingSubject.complete();
+    }
+
+    shouldShowAvatar(index: number): boolean{
+        if (index === 0) return true;
+        const current = this.messages[index]
+        const prev = this.messages[index - 1]
+
+        return current.user_id !== prev.user_id
+    
     }
 }

@@ -29,7 +29,7 @@ export class RoomMembersComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        const id = this.route.snapshot.paramMap.get('roomID');
+        const id = this.route.snapshot.paramMap.get('id');
         if (!id) {
             console.error('roomID não fornecido na rota');
             return;

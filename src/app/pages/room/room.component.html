@@ -1,149 +1,184 @@
-<div class="flex flex-col h-screen bg-gray-900 text-gray-200">
+<div class="flex flex-col h-screen bg-gradient-to-b from-gray-50 to-blue-50">
     <header
-        class="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800 shadow-md"
+        class="flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm sticky top-0 z-10"
     >
-        <div>
-            <h1 class="text-xl font-bold text-white">{{ roomName }}</h1>
-            <span class="text-xs text-green-400 flex items-center gap-1">
-                <span
-                    class="w-2 h-2 bg-green-400 rounded-full inline-block"
-                ></span>
-                Online
-            </span>
-        </div>
-        <button
-            (click)="goBack()"
-            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-sm font-medium rounded-lg transition-colors"
-        >
-            Sair da Sala
-        </button>
-    </header>
-
-    <main #scrollMe class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900">
-        <div *ngIf="isLoadingHistory" class="text-center py-4">
-            <span class="text-gray-500 text-sm animate-pulse"
-                >Carregando histórico...</span
+        <div class="flex items-center gap-3">
+            <button
+                (click)="goBack()"
+                class="text-gray-500 hover:text-blue-600 transition-colors"
             >
-        </div>
-        <div
-            *ngIf="errorMessage"
-            class="text-center p-4 bg-red-900/20 border border-red-900 rounded-lg text-red-400 text-sm mx-auto max-w-md"
-        >
-            {{ errorMessage }}
-        </div>
-
-        <div *ngFor="let msg of messages" class="w-full">
-            <div
-                *ngIf="msg.type === 'PRESENCE'"
-                class="flex justify-center my-2"
-            >
-                <span
-                    class="text-xs text-gray-500 bg-gray-800/50 px-3 py-1 rounded-full"
+                <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                 >
-                    {{ msg.username }} {{ msg.content }}
-                </span>
-            </div>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
+                </svg>
+            </button>
 
-            <div
-                *ngIf="msg.type === 'CHAT' || !msg.type"
-                class="flex w-full"
-                [ngClass]="
-                    isMyMessage(msg.user_id) ? 'justify-end' : 'justify-start'
-                "
-            >
-                <div
-                    class="flex max-w-[80%] md:max-w-[60%] gap-3"
-                    [ngClass]="
-                        isMyMessage(msg.user_id)
-                            ? 'flex-row-reverse'
-                            : 'flex-row'
-                    "
-                >
-                    <div class="flex-shrink-0">
-                        <img
-                            src="https://ui-avatars.com/api/?name={{
-                                msg.username
-                            }}&background=random&color=fff"
-                            class="w-8 h-8 rounded-full shadow-sm"
-                            [alt]="msg.username"
-                        />
-                    </div>
-
-                    <div
-                        class="flex flex-col gap-1"
-                        [ngClass]="
-                            isMyMessage(msg.user_id)
-                                ? 'items-end'
-                                : 'items-start'
-                        "
-                    >
-                        <span class="text-xs text-gray-400 px-1">
-                            {{ msg.username }}
-                        </span>
-
-                        <div
-                            class="px-4 py-2 rounded-2xl shadow-sm text-sm leading-relaxed break-words"
-                            [ngClass]="
-                                isMyMessage(msg.user_id)
-                                    ? 'bg-blue-600 text-white rounded-tr-none'
-                                    : 'bg-gray-700 text-gray-100 rounded-tl-none'
-                            "
-                        >
-                            {{ msg.content }}
-                        </div>
-
+            <div>
+                <h1 class="text-xl font-bold text-gray-800">{{ roomName }}</h1>
+                <div class="flex items-center gap-1.5">
+                    <span class="relative flex h-2.5 w-2.5">
                         <span
-                            *ngIf="msg.CreatedAt"
-                            class="text-[10px] text-gray-600 px-1"
-                        >
-                            {{ msg.CreatedAt | date : "HH:mm" }}
-                        </span>
-                    </div>
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+                        ></span>
+                        <span
+                            class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"
+                        ></span>
+                    </span>
+                    <span class="text-xs font-medium text-gray-500"
+                        >Online</span
+                    >
                 </div>
             </div>
         </div>
-    </main>
 
-    <footer class="p-4 bg-gray-800 border-t border-gray-700">
-        <div
-            class="h-6 text-xs text-gray-400 px-2 mb-1 transition-opacity duration-300"
-            [class.opacity-0]="!typingUser"
-            [class.opacity-100]="typingUser"
+        <button
+            (click)="goBack()"
+            class="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
         >
-            <span class="animate-pulse" *ngIf="typingUser">
-                <strong>{{ typingUser }}</strong> está digitando...
-            </span>
+            Sair
+        </button>
+    </header>
+
+    <main #scrollMe class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div
+            *ngIf="isLoadingHistory"
+            class="flex flex-col items-center justify-center py-8"
+        >
+            <div
+                class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"
+            ></div>
+            <span class="text-gray-500 text-sm">Carregando histórico...</span>
         </div>
 
-        <div
-            class="flex items-center gap-2 bg-gray-900 p-2 rounded-xl border border-gray-700 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all"
-        >
-            <input
-                type="text"
-                class="flex-1 bg-transparent text-gray-100 placeholder-gray-500 focus:outline-none px-3 py-1"
-                [(ngModel)]="newMessageContent"
-                (keyup.enter)="sendMessage()"
-                (input)="sendTypingEvent()"
-                [disabled]="!roomId"
-                placeholder="Digite sua mensagem..."
-            />
-
-            <button
-                (click)="sendMessage()"
-                [disabled]="!newMessageContent.trim() || !roomId"
-                class="p-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg transition-colors shadow-sm"
+        <div *ngIf="errorMessage" class="flex justify-center">
+            <div
+                class="px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm shadow-sm"
             >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="w-5 h-5"
+                {{ errorMessage }}
+            </div>
+        </div>
+
+ <div *ngFor="let msg of messages; let i = index" class="w-full">
+    
+    <div *ngIf="msg.type === 'PRESENCE'" class="flex justify-center my-4">
+        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+            {{ msg.username }} {{ msg.content }}
+        </span>
+    </div>
+
+    <div
+        *ngIf="msg.type === 'CHAT' || !msg.type"
+        class="flex w-full group transition-all hover:bg-gray-50/50 px-2"
+        [ngClass]="{
+            'justify-end': isMyMessage(msg.user_id),
+            'justify-start': !isMyMessage(msg.user_id),
+            'mt-4': shouldShowAvatar(i), 
+            'mt-0.5': !shouldShowAvatar(i)
+        }"
+    >
+        <div
+            class="flex max-w-[85%] sm:max-w-[70%] gap-2"
+            [ngClass]="isMyMessage(msg.user_id) ? 'flex-row-reverse' : 'flex-row'"
+        >
+            <div class="w-8 flex-shrink-0 flex flex-col justify-end">
+                <img
+                    *ngIf="shouldShowAvatar(i) && !isMyMessage(msg.user_id)"
+                    src="https://ui-avatars.com/api/?name={{ msg.username }}&background=random&color=fff"
+                    class="w-8 h-8 rounded-full shadow-sm border-2 border-white"
+                    [alt]="msg.username"
+                />
+                <div *ngIf="!shouldShowAvatar(i) && !isMyMessage(msg.user_id)" class="w-8"></div>
+            </div>
+
+            <div
+                class="flex flex-col"
+                [ngClass]="isMyMessage(msg.user_id) ? 'items-end' : 'items-start'"
+            >
+                <span 
+                    *ngIf="shouldShowAvatar(i) && !isMyMessage(msg.user_id)" 
+                    class="text-xs text-gray-500 px-1 font-medium mb-0.5 ml-1"
                 >
-                    <path
-                        d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
-                    />
-                </svg>
-            </button>
+                    {{ msg.username }}
+                </span>
+
+                <div
+                    class="px-4 py-2 shadow-sm text-sm leading-relaxed break-words relative transition-all"
+                    [ngClass]="{
+                        'bg-blue-600 text-white': isMyMessage(msg.user_id),
+                        'bg-white text-gray-800 border border-gray-100': !isMyMessage(msg.user_id),
+                        'rounded-2xl': true,
+                        'rounded-tr-sm': isMyMessage(msg.user_id) && shouldShowAvatar(i), 
+                        'rounded-br-sm': isMyMessage(msg.user_id) && !shouldShowAvatar(i),
+                        'rounded-tl-sm': !isMyMessage(msg.user_id) && shouldShowAvatar(i),
+                        'rounded-bl-sm': !isMyMessage(msg.user_id) && !shouldShowAvatar(i)
+                    }"
+                >
+                    {{ msg.content }}
+                    
+                    <span 
+                        *ngIf="msg.CreatedAt" 
+                        class="text-[10px] ml-2 inline-block align-bottom opacity-70 min-w-[30px] text-right"
+                        [ngClass]="isMyMessage(msg.user_id) ? 'text-blue-100' : 'text-gray-400'"
+                    >
+                        {{ msg.CreatedAt | date : "HH:mm" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </main>
+
+    <footer
+        class="p-4 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
+    >
+        <div class="max-w-4xl mx-auto w-full">
+            <div
+                class="h-6 pl-4 mb-1 text-xs font-medium text-blue-500 transition-all duration-300"
+            >
+                <span *ngIf="typingUser" class="flex items-center gap-1">
+                    <span class="animate-pulse">●</span>
+                    <strong>{{ typingUser }}</strong> está digitando...
+                </span>
+            </div>
+
+            <div class="relative flex items-center">
+                <input
+                    type="text"
+                    class="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all shadow-inner"
+                    [(ngModel)]="newMessageContent"
+                    (keyup.enter)="sendMessage()"
+                    (input)="sendTypingEvent()"
+                    [disabled]="!roomId"
+                    placeholder="Digite sua mensagem..."
+                />
+
+                <button
+                    (click)="sendMessage()"
+                    [disabled]="!newMessageContent.trim() || !roomId"
+                    class="absolute right-2 p-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-full transition-all shadow-md transform active:scale-95"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        class="w-5 h-5 translate-x-0.5 -translate-y-0.5"
+                    >
+                        <path
+                            d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
+                        />
+                    </svg>
+                </button>
+            </div>
         </div>
     </footer>
 </div>
