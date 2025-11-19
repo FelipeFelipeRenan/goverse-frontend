@@ -7,6 +7,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { RoomService } from '../../services/room.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
     selector: 'app-create-room-modal',
@@ -24,7 +25,8 @@ export class CreateRoomModalComponent {
 
     constructor(
         private fb: FormBuilder,
-        private roomService: RoomService
+        private roomService: RoomService,
+        private toastService: ToastService
     ) {
         this.roomForm = this.fb.group({
             room_name: ['', [Validators.required, Validators.minLength(3)]],
@@ -60,9 +62,9 @@ export class CreateRoomModalComponent {
                 console.error('Erro ao criar sala:', err);
                 this.loading = false;
                 if (err.status === 409) {
-                    alert('Já existe uma sala com este nome!');
+                    this.toastService.error('Já existe uma sala com este nome!');
                 } else {
-                    alert('Erro ao criar sala. Tente novamente.');
+                    this.toastService.error('Erro ao criar sala. Tente novamente.');
                 }
             },
         });

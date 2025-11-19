@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { CreateRoomModalComponent } from '../../components/create-room-modal/create-room-modal.component';
 import { RoomCardComponent } from '../../components/room-card/room-card.component';
 import { EditRoomModalComponent } from '../../components/edit-room-modal/edit-room-modal.component';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
     selector: 'app-home',
@@ -30,6 +31,7 @@ export class HomeComponent implements OnInit {
     constructor(
         private roomService: RoomService,
         private authService: AuthService,
+        private toastService: ToastService,
         private router: Router
     ) {}
 
@@ -98,11 +100,14 @@ export class HomeComponent implements OnInit {
                 this.ownedRooms = this.ownedRooms?.filter(
                     (room) => room.room_id !== roomId
                 );
-                alert('Sala excluída com sucesso!');
+                this.toastService.success('Sala excluída com sucesso!');
+                
             },
             error: (err) => {
                 console.error('Erro ao excluir sala:', err);
-                alert('Erro ao excluir sala.');
+                                       this.toastService.error(
+                            'Erro ao excluir sala'
+                        );
             },
         });
     }
@@ -118,14 +123,16 @@ export class HomeComponent implements OnInit {
 
         this.roomService.updateRoom(this.editedRoomId, updates).subscribe({
             next: () => {
-                alert('Sala atualizada com sucesso!');
+                this.toastService.success('Sala atualizada com sucesso!');
                 this.editedRoomId = null;
                 this.roomBeingEdited = null;
                 this.loadRooms();
             },
             error: (err) => {
                 console.error('Erro ao atualizar sala:', err);
-                alert('Erro ao atualizar sala');
+                                        this.toastService.error(
+                            'Erro ao atualizar sala'
+                        );
             },
         });
     }

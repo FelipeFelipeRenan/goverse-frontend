@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Role, RoomMember, RoomService } from '../../services/room.service';
 import { AddMembersModalComponent } from '../../components/add-members-modal/add-members-modal.component';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
     selector: 'app-room-members',
@@ -25,7 +26,8 @@ export class RoomMembersComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
-        private roomService: RoomService
+        private roomService: RoomService,
+        private toastService: ToastService,
     ) {}
 
     ngOnInit(): void {
@@ -69,7 +71,7 @@ export class RoomMembersComponent implements OnInit {
                 this.updatePagination();
             },
             error: (err) => {
-                alert('Erro ao remover membro');
+                this.toastService.error('Erro ao remover membro');
                 console.error('Erro ao remover membro: ', err);
             },
         });
@@ -99,7 +101,7 @@ export class RoomMembersComponent implements OnInit {
                     select.value =
                         this.members.find((m) => m.user.user_id === userId)
                             ?.role || 'member';
-                    alert('Não foi possível atualizar a função do membro.');
+                    this.toastService.error('Não foi possível atualizar a função do membro.');
                 },
             });
     }
@@ -158,7 +160,7 @@ export class RoomMembersComponent implements OnInit {
             },
             error: (err) =>{
                 console.error('Erro ao adicionar membro: ', err)
-                alert('Erro ao adicionar membro')
+                this.toastService.error('Erro ao adicionar membro')
             }
         })
     }

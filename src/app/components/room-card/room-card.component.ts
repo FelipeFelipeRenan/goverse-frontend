@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Room } from '../../services/room.service';
 import { Router } from '@angular/router';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
     selector: 'app-room-card',
@@ -21,7 +22,7 @@ export class RoomCardComponent {
 
     @Input() showMenu = false;
 
-    constructor(private router: Router) {}
+    constructor(private router: Router, private toastService: ToastService) {}
 
     get borderClass() {
         return this.color === 'blue'
@@ -47,13 +48,13 @@ export class RoomCardComponent {
     }
 
     editRoom() {
-        alert('Editar sala: ' + this.room.room_name);
+        this.toastService.show('Editar sala: ' + this.room.room_name);
         this.onEdit.emit(this.room);
         this.closeMenu();
     }
 
     deleteRoom() {
-        alert('Excluir sala: ' + this.room.room_id);
+        this.toastService.show('Excluir sala: ' + this.room.room_id);
 
         this.onDelete.emit(this.room.room_id);
 
