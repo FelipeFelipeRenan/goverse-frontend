@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Room, RoomService } from '../../services/room.service';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, User } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { CreateRoomModalComponent } from '../../components/create-room-modal/create-room-modal.component';
 import { RoomCardComponent } from '../../components/room-card/room-card.component';
 import { EditRoomModalComponent } from '../../components/edit-room-modal/edit-room-modal.component';
 import { ToastService } from '../../services/toast.service';
+import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-home',
@@ -15,18 +17,28 @@ import { ToastService } from '../../services/toast.service';
     standalone: true,
     imports: [
         CommonModule,
+        FormsModule,
         CreateRoomModalComponent,
         RoomCardComponent,
         EditRoomModalComponent,
     ],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
+    currentUser: User | null = null;
     ownedRooms: Room[] = [];
     joinedRooms: Room[] = [];
+
+    // propriedades para filtro
+    searchTerm: string = '';
+    filteredOwnedRooms: Room[] = [];
+    filteredJoinedRooms: Room[] = [];
+
     showCreateModal = false;
-    loading = false;
+    loading = true;
     editedRoomId: string | null = null;
     roomBeingEdited: Room | null = null;
+
+    private destroy$ = new Subject<void>();
 
     constructor(
         private roomService: RoomService,
@@ -36,31 +48,58 @@ export class HomeComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        // inscreve para coletar dados do usuario
+        this.authService.currentUser$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((user) => (this.currentUser = user));
         this.loadRooms();
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    filterRooms() {
+        const term = this.searchTerm.toLowerCase();
+        this.filteredOwnedRooms = this.ownedRooms.filter((r) =>
+            r.room_name.toLowerCase().includes(term)
+        );
+        this.filteredJoinedRooms = this.joinedRooms.filter((r) =>
+            r.room_name.toLowerCase().includes(term)
+        );
     }
 
     loadRooms(): void {
         this.loading = true;
 
-        this.roomService.getOwnedRooms().subscribe({
-            next: (rooms) => {
-                this.ownedRooms = rooms;
-                this.loading = false;
-            },
-            error: (err) => {
-                console.error('Erro ao carregar salas criadas:', err);
-                this.loading = false;
-            },
-        });
+        this.roomService
+            .getOwnedRooms()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (rooms) => {
+                    this.ownedRooms = rooms;
+                    this.filterRooms();
+                },
+                error: (err) => {
+                    console.error('Erro ao carregar salas criadas:', err);
+                },
+            });
 
-        this.roomService.getJoinedRooms().subscribe({
-            next: (rooms) => {
-                this.joinedRooms = rooms;
-            },
-            error: (err) => {
-                console.error('Erro ao carregar salas que participa:', err);
-            },
-        });
+        this.roomService
+            .getJoinedRooms()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (rooms) => {
+                    this.joinedRooms = rooms;
+                    this.filterRooms();
+                    this.loading = false;
+                },
+                error: (err) => {
+                    console.error('Erro ao carregar salas que participa:', err);
+                    this.loading = false;
+                },
+            });
     }
 
     // felipefeliperenan/goverse-frontend/goverse-frontend-23444aa58e9649684636f17a661a1c66bbcfb82c/src/app/pages/home/home.component.ts
@@ -100,14 +139,12 @@ export class HomeComponent implements OnInit {
                 this.ownedRooms = this.ownedRooms?.filter(
                     (room) => room.room_id !== roomId
                 );
+                this.filterRooms();
                 this.toastService.success('Sala excluída com sucesso!');
-                
             },
             error: (err) => {
                 console.error('Erro ao excluir sala:', err);
-                                       this.toastService.error(
-                            'Erro ao excluir sala'
-                        );
+                this.toastService.error('Erro ao excluir sala');
             },
         });
     }
@@ -130,9 +167,7 @@ export class HomeComponent implements OnInit {
             },
             error: (err) => {
                 console.error('Erro ao atualizar sala:', err);
-                                        this.toastService.error(
-                            'Erro ao atualizar sala'
-                        );
+                this.toastService.error('Erro ao atualizar sala');
             },
         });
     }
