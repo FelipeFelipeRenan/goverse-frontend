@@ -13,11 +13,14 @@ import { Subscription, timer, Subject, EMPTY } from 'rxjs';
 import { switchMap, takeUntil, catchError } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
+import { RoomSidebarComponent } from '../../components/room-sidebar/room-sidebar.component';
+import { RoomMember, RoomService } from '../../services/room.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
     selector: 'app-room',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RoomSidebarComponent],
     templateUrl: './room.component.html',
     styleUrls: ['./room.component.css'],
 })
@@ -31,9 +34,13 @@ export class RoomComponent implements OnInit, OnDestroy {
     public typingUser: string | null = null;
     public errorMessage: string | null = null;
 
+    // propriedades para o sidebar
+    public roomMembers: RoomMember[] = [];
+    public isSidebarOpen = false;
+
     public roomId: string | null = null;
     public currentUser: User | null = null;
-    
+
     // Subject para gerenciar o unsubscribe de tudo de uma vez
     private destroy$ = new Subject<void>();
     private typingSubject = new Subject<void>();
@@ -44,6 +51,8 @@ export class RoomComponent implements OnInit, OnDestroy {
         private router: Router,
         private chatService: ChatService,
         private authService: AuthService,
+        private roomService: RoomService,
+        private toastService: ToastService,
         private cdr: ChangeDetectorRef
     ) {}
 
@@ -56,7 +65,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         this.roomId = this.route.snapshot.paramMap.get('id');
 
         if (this.roomId) {
-            this.roomName = `Sala ${this.roomId}`; 
+            this.roomName = `Sala ${this.roomId}`;
 
             // Carrega histórico
             this.chatService
@@ -65,7 +74,9 @@ export class RoomComponent implements OnInit, OnDestroy {
                     takeUntil(this.destroy$), // Garante limpeza
                     catchError((err) => {
                         console.error('Erro:', err);
-                        this.errorMessage = 'Erro ao carregar histórico.';
+                        this.toastService.error(
+                            'Não foi possível carregar o histórico da sala.'
+                        );
                         this.isLoadingHistory = false;
                         return EMPTY;
                     })
@@ -80,7 +91,8 @@ export class RoomComponent implements OnInit, OnDestroy {
 
             this.chatService.connect(this.roomId);
 
-            this.chatService.onNewMessage()
+            this.chatService
+                .onNewMessage()
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     (newMessage) => this.handleNewMessage(newMessage),
@@ -88,13 +100,15 @@ export class RoomComponent implements OnInit, OnDestroy {
                 );
 
             this.setupTypingHandlers();
+            this.loadRoomMembers();
         }
     }
 
     // Removemos o ngAfterViewChecked problemático
 
     scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
-        setTimeout(() => { // Timeout para garantir que o DOM atualizou
+        setTimeout(() => {
+            // Timeout para garantir que o DOM atualizou
             try {
                 if (this.myScrollContainer) {
                     this.myScrollContainer.nativeElement.scrollTo({
@@ -107,29 +121,31 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
 
     handleNewMessage(msg: Message): void {
-        if (msg.type === 'TYPING_START' && msg.user_id !== this.currentUser?.id) {
+        if (
+            msg.type === 'TYPING_START' &&
+            msg.user_id !== this.currentUser?.id
+        ) {
             this.typingUser = msg.username;
             // Reinicia o timer de parar de digitar
-            this.stopTypingTimer.next(); 
+            this.stopTypingTimer.next();
             timer(3000)
                 .pipe(takeUntil(this.stopTypingTimer))
-                .subscribe(() => this.typingUser = null);
-                
+                .subscribe(() => (this.typingUser = null));
         } else if (msg.type === 'TYPING_STOP') {
-             if (this.typingUser === msg.username) {
+            if (this.typingUser === msg.username) {
                 this.typingUser = null;
                 this.stopTypingTimer.next();
             }
         } else if (msg.type === 'CHAT' || !msg.type) {
             // Se for chat normal
             this.messages.push(msg);
-            
+
             // Se quem estava digitando mandou a msg, limpa o status
             if (this.typingUser === msg.username) {
                 this.typingUser = null;
                 this.stopTypingTimer.next();
             }
-            
+
             this.cdr.detectChanges();
             // Scroll apenas quando chega mensagem nova
             this.scrollToBottom('smooth');
@@ -137,17 +153,19 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
 
     setupTypingHandlers(): void {
-        this.typingSubject.pipe(
-            takeUntil(this.destroy$),
-            switchMap(() => {
-                this.chatService.sendMessage({
-                    type: 'TYPING_START',
-                    content: '',
-                    room_id: this.roomId || '',
-                });
-                return timer(2000);
-            })
-        ).subscribe();
+        this.typingSubject
+            .pipe(
+                takeUntil(this.destroy$),
+                switchMap(() => {
+                    this.chatService.sendMessage({
+                        type: 'TYPING_START',
+                        content: '',
+                        room_id: this.roomId || '',
+                    });
+                    return timer(2000);
+                })
+            )
+            .subscribe();
     }
 
     sendTypingEvent(): void {
@@ -184,12 +202,31 @@ export class RoomComponent implements OnInit, OnDestroy {
         this.stopTypingTimer.complete();
     }
 
-    shouldShowAvatar(index: number): boolean{
+    shouldShowAvatar(index: number): boolean {
         if (index === 0) return true;
-        const current = this.messages[index]
-        const prev = this.messages[index - 1]
+        const current = this.messages[index];
+        const prev = this.messages[index - 1];
 
-        return current.user_id !== prev.user_id
-    
+        return current.user_id !== prev.user_id;
+    }
+
+    loadRoomMembers() {
+        if (!this.roomId) return;
+
+        this.roomService
+            .getMembers(this.roomId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (members) => {
+                    this.roomMembers = members;
+                    console.log('Membros carregados: ', members);
+                },
+                error: (err) =>
+                    console.error('Erro ao carregar membros: ', err),
+            });
+    }
+
+    toggleSidebar() {
+        this.isSidebarOpen = !this.isSidebarOpen;
     }
 }
