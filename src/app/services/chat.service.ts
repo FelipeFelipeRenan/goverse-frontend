@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { environment } from '../../environments/environment';
 
 export interface Message {
     id?: string;
@@ -18,8 +19,8 @@ export interface Message {
 })
 export class ChatService {
     // TODO: mover para environment.ts
-    private apiUrl = 'http://localhost';
-    private wsUrl = 'ws://localhost/ws';
+    private apiUrl = environment.apiUrl;
+    private wsUrl = environment.wsUrl;
 
     private socket$: WebSocketSubject<any> | null = null;
 

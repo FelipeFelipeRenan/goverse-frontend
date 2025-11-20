@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface CreateUserPayload {
     username: string;
@@ -12,7 +13,7 @@ export interface CreateUserPayload {
     providedIn: 'root',
 })
 export class UserService {
-    private baseUrl = 'http://localhost';
+    private baseUrl = environment.apiUrl;
 
     constructor(private http: HttpClient) {}
 

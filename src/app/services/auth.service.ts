@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface User {
     id: string;
@@ -27,7 +28,7 @@ interface LoginResponse {
     providedIn: 'root',
 })
 export class AuthService {
-    private readonly API_URL = 'http://localhost';
+    private readonly API_URL = environment.apiUrl
     private userSubject = new BehaviorSubject<User | null>(null);
     public currentUser$ = this.userSubject.asObservable();
     private csrfToken: string | null = null;
