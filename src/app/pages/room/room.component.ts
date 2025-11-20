@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatService, Message } from '../../services/chat.service';
-import { Subscription, timer, Subject, EMPTY } from 'rxjs';
+import { timer, Subject, EMPTY } from 'rxjs';
 import { switchMap, takeUntil, catchError } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
@@ -45,6 +45,8 @@ export class RoomComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     private typingSubject = new Subject<void>();
     private stopTypingTimer = new Subject<void>();
+
+    public isNearBottom = true;
 
     constructor(
         private route: ActivatedRoute,
@@ -104,20 +106,36 @@ export class RoomComponent implements OnInit, OnDestroy {
         }
     }
 
-    // Removemos o ngAfterViewChecked problemático
+    // metodo para detectar se o usuario subiu a tela
+    onScroll(): void {
+        const element = this.myScrollContainer.nativeElement;
+        const atBottom =
+            element.scrollHeight - element.scrollTop <=
+            element.clientHeight + 100;
+        this.isNearBottom = atBottom;
+    }
 
-    scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
-        setTimeout(() => {
-            // Timeout para garantir que o DOM atualizou
-            try {
-                if (this.myScrollContainer) {
-                    this.myScrollContainer.nativeElement.scrollTo({
-                        top: this.myScrollContainer.nativeElement.scrollHeight,
-                        behavior: behavior,
-                    });
-                }
-            } catch (err) {}
-        }, 100);
+    scrollToBottom(
+        behavior: ScrollBehavior = 'smooth',
+        force: boolean = false
+    ): void {
+        if (force || behavior === 'instant' || this.isNearBottom) {
+            setTimeout(() => {
+                // Timeout para garantir que o DOM atualizou
+                try {
+                    if (this.myScrollContainer) {
+                        this.myScrollContainer.nativeElement.scrollTo({
+                            top: this.myScrollContainer.nativeElement
+                                .scrollHeight,
+                            behavior: behavior,
+                        });
+                        if (force) {
+                            this.isNearBottom = true;
+                        }
+                    }
+                } catch (err) {}
+            }, 100);
+        }
     }
 
     handleNewMessage(msg: Message): void {

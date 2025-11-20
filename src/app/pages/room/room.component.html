@@ -76,7 +76,31 @@
         </div>
     </header>
 
-    <main #scrollMe class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+    <main
+        #scrollMe
+        (scroll)="onScroll()"
+        class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6"
+    >
+        <button
+            *ngIf="!isNearBottom"
+            (click)="scrollToBottom('smooth', true)"
+            class="absolute bottom-24 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg animate-bounce z-20 hover:bg-blue-700 transition-colors"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                />
+            </svg>
+        </button>
         <div
             *ngIf="isLoadingHistory"
             class="flex flex-col items-center justify-center py-8"
