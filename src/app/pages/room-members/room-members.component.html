@@ -96,10 +96,10 @@
             class="flex items-center bg-white shadow-sm p-4 rounded-xl border border-gray-100 hover:shadow-md transition-all duration-200"
         >
             <img
-                [src]="member.user.picture || 'defaultavatar.jpg'"
+                [src]="member.user.picture || '/defaultavatar.jpg'"
                 alt="Perfil de {{ member.user.name }}"
                 class="w-12 h-12 rounded-full mr-4 border-2 border-white shadow"
-                onerror="this.onerror=null;this.src='defaultavatar.jpg'"
+                onerror="this.onerror=null;this.src='/defaultavatar.jpg'"
             />
 
             <div class="flex-1 min-w-0">
