@@ -36,6 +36,7 @@ export interface RoomMember {
     room_id: string;
     role: Role;
     joined_at: string;
+    is_online?: boolean;
     user: {
         user_id: string;
         name: string;

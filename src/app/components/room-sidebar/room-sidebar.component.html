@@ -55,17 +55,17 @@
         >
             <div class="relative">
                 <img
-                    [src]="
-                        member.user.picture || '/defaultavatar.jpg'
-                    "
+                    [src]="member.user.picture || '/defaultavatar.jpg'"
                     class="w-10 h-10 rounded-full border border-gray-200 object-cover"
-                    onerror="this.src='/defaultavatar.jpg'"
+                    onerror="this.onerror=null;this.src='/defaultavatar.jpg'"
                 />
+
                 <div
-                    class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"
+                    *ngIf="member.is_online"
+                    class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm"
+                    title="Online"
                 ></div>
             </div>
-
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                     <p

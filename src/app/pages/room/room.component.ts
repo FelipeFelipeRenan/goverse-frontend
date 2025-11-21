@@ -10,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ChatService, Message } from '../../services/chat.service';
 import { timer, Subject, EMPTY } from 'rxjs';
-import { switchMap, takeUntil, catchError } from 'rxjs/operators';
+import { switchMap, takeUntil, catchError, max } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { RoomSidebarComponent } from '../../components/room-sidebar/room-sidebar.component';
@@ -168,6 +168,12 @@ export class RoomComponent implements OnInit, OnDestroy {
             // Scroll apenas quando chega mensagem nova
             this.scrollToBottom('smooth');
         }
+
+        this.updateMemberStatus(msg.user_id, true);
+
+        if (msg.type === 'PRESENCE' && msg.content.includes('saiu')) {
+            this.updateMemberStatus(msg.user_id, false);
+        }
     }
 
     setupTypingHandlers(): void {
@@ -201,6 +207,8 @@ export class RoomComponent implements OnInit, OnDestroy {
             this.newMessageContent = '';
             this.stopTypingTimer.next();
             this.typingUser = null;
+            const textarea = document.querySelector('textarea');
+            if (textarea) textarea.style.height = 'auto';
         }
     }
 
@@ -246,5 +254,50 @@ export class RoomComponent implements OnInit, OnDestroy {
 
     toggleSidebar() {
         this.isSidebarOpen = !this.isSidebarOpen;
+    }
+
+    shouldShowDateSeparator(index: number): boolean {
+        const currentMsg = this.messages[index];
+
+        // sempre mostra a data na primeira mensagem
+        if (index === 0) return true;
+
+        const prevMsg = this.messages[index - 1];
+
+        // se alguma mensagem nao tiver data (como pendente), nao mostra separador
+        if (!currentMsg.CreatedAt || !prevMsg.CreatedAt) return false;
+
+        const currentDate = new Date(currentMsg.CreatedAt).toDateString();
+        const prevDate = new Date(prevMsg.CreatedAt).toDateString();
+
+        // retorna true se as datas forem diferentes
+        return currentDate !== prevDate;
+    }
+
+    // metodo para ajustar a altura do textarea
+    adjustTextareaHeight(event: any): void {
+        const textarea = event.target;
+        textarea.style.height = 'auto'; // reseta para calcular o tamanho real
+
+        // limita a altura maxima (ex: 120px ou 5 linhas) para não cobrir a tela toda
+        const maxHeight = 120;
+        if (textarea.scrollHeight <= maxHeight) {
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        } else {
+            textarea.style.height = `${maxHeight}px`;
+        }
+
+        this.sendTypingEvent; // avisa que está digitando
+    }
+
+    updateMemberStatus(userId: string, isOnline: boolean) {
+        const memberIndex = this.roomMembers.findIndex(
+            (m) => m.user.user_id === userId
+        );
+        if (memberIndex !== -1) {
+            this.roomMembers[memberIndex].is_online = isOnline;
+
+            this.roomMembers = [...this.roomMembers];
+        }
     }
 }
