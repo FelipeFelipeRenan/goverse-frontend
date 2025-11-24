@@ -16,6 +16,7 @@ import { AuthService, User } from '../../services/auth.service';
 import { RoomSidebarComponent } from '../../components/room-sidebar/room-sidebar.component';
 import { RoomMember, RoomService } from '../../services/room.service';
 import { ToastService } from '../../services/toast.service';
+import { AutoResizeDirective } from '../../directives/auto-resize.directive';
 
 @Component({
     selector: 'app-room',
@@ -26,6 +27,7 @@ import { ToastService } from '../../services/toast.service';
 })
 export class RoomComponent implements OnInit, OnDestroy {
     @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
+    @ViewChild(AutoResizeDirective) resizeDirective!: AutoResizeDirective;
 
     public messages: Message[] = [];
     public newMessageContent: string = '';
@@ -204,8 +206,9 @@ export class RoomComponent implements OnInit, OnDestroy {
             this.newMessageContent = '';
             this.stopTypingTimer.next();
             this.typingUser = null;
-            const textarea = document.querySelector('textarea');
-            if (textarea) textarea.style.height = 'auto';
+            if (this.resizeDirective) {
+                this.resizeDirective.reset();
+            }
         }
     }
 
@@ -269,22 +272,6 @@ export class RoomComponent implements OnInit, OnDestroy {
 
         // retorna true se as datas forem diferentes
         return currentDate !== prevDate;
-    }
-
-    // metodo para ajustar a altura do textarea
-    adjustTextareaHeight(event: any): void {
-        const textarea = event.target;
-        textarea.style.height = 'auto'; // reseta para calcular o tamanho real
-
-        // limita a altura maxima (ex: 120px ou 5 linhas) para não cobrir a tela toda
-        const maxHeight = 120;
-        if (textarea.scrollHeight <= maxHeight) {
-            textarea.style.height = `${textarea.scrollHeight}px`;
-        } else {
-            textarea.style.height = `${maxHeight}px`;
-        }
-
-        this.sendTypingEvent; // avisa que está digitando
     }
 
     updateMemberStatus(userId: string, isOnline: boolean) {
