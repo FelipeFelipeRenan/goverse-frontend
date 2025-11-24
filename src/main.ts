@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { AuthService } from './app/services/auth.service';
-import { CredentialsInterceptor } from './app/credentials.interceptor';
-import { CsrfInterceptor } from './app/csrf_interceptor';
+import { CredentialsInterceptor } from './app/interceptors/credentials.interceptor';
+import { CsrfInterceptor } from './app/interceptors/csrf_interceptor';
 
 // Factory function que o Angular vai chamar durante a inicialização
 export function initializeAuthFactory(authService: AuthService): () => Observable<any> {

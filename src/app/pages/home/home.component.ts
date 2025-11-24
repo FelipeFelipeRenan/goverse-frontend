@@ -144,7 +144,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
                 console.error('Erro ao excluir sala:', err);
-                this.toastService.error('Erro ao excluir sala');
+               // this.toastService.error('Erro ao excluir sala');
             },
         });
     }
@@ -167,7 +167,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
                 console.error('Erro ao atualizar sala:', err);
-                this.toastService.error('Erro ao atualizar sala');
+                //this.toastService.error('Erro ao atualizar sala');
             },
         });
     }

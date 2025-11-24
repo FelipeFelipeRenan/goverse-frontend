@@ -76,9 +76,6 @@ export class RoomComponent implements OnInit, OnDestroy {
                     takeUntil(this.destroy$), // Garante limpeza
                     catchError((err) => {
                         console.error('Erro:', err);
-                        this.toastService.error(
-                            'Não foi possível carregar o histórico da sala.'
-                        );
                         this.isLoadingHistory = false;
                         return EMPTY;
                     })
