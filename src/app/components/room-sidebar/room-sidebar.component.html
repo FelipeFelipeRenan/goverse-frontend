@@ -50,7 +50,7 @@
 
     <div class="flex-1 overflow-y-auto p-4 space-y-3">
         <div
-            *ngFor="let member of members"
+            *ngFor="let member of members; trackBy: trackByMember"
             class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors group cursor-default"
         >
             <div class="relative">
@@ -59,13 +59,13 @@
                     class="w-10 h-10 rounded-full border border-gray-200 object-cover"
                     onerror="this.onerror=null;this.src='/defaultavatar.jpg'"
                 />
-
                 <div
                     *ngIf="member.is_online"
                     class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm"
                     title="Online"
                 ></div>
             </div>
+
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                     <p
@@ -76,22 +76,72 @@
 
                     <span
                         *ngIf="
-                            member.role === 'owner' || member.role === 'admin'
+                            ['owner', 'admin', 'moderator'].includes(
+                                member.role
+                            )
                         "
                         class="text-[10px] px-1.5 py-0.5 rounded-md font-medium uppercase tracking-wider border"
                         [ngClass]="{
                             'bg-amber-100 text-amber-700 border-amber-200':
                                 member.role === 'owner',
                             'bg-blue-100 text-blue-700 border-blue-200':
-                                member.role === 'admin'
+                                member.role === 'admin',
+                            'bg-purple-100 text-purple-700 border-purple-200':
+                                member.role === 'moderator'
                         }"
                     >
-                        {{ member.role === "owner" ? "Dono" : "Admin" }}
+                        {{
+                            member.role === "owner"
+                                ? "Dono"
+                                : member.role === "admin"
+                                ? "Admin"
+                                : "Mod"
+                        }}
                     </span>
                 </div>
                 <p class="text-xs text-gray-400 truncate">
                     {{ member.user.email }}
                 </p>
+            </div>
+
+            <div
+                *ngIf="canManage(member.role) && member.role !== 'owner'"
+                class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+                <select
+                    [ngModel]="member.role"
+                    (ngModelChange)="
+                        updateRole.emit({
+                            userId: member.user.user_id,
+                            role: $event
+                        })
+                    "
+                    class="text-[10px] bg-white text-gray-700 border border-gray-200 rounded p-1 focus:outline-none focus:border-blue-500 shadow-sm cursor-pointer"
+                >
+                    <option value="admin">Admin</option>
+                    <option value="moderator">Mod</option>
+                    <option value="member">Membro</option>
+                </select>
+
+                <button
+                    (click)="removeUser.emit(member.user.user_id)"
+                    class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                    title="Remover da sala"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path>
+                    </svg>
+                </button>
             </div>
         </div>
 

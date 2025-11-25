@@ -14,7 +14,7 @@ import { switchMap, takeUntil, catchError, max } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 import { RoomSidebarComponent } from '../../components/room-sidebar/room-sidebar.component';
-import { RoomMember, RoomService } from '../../services/room.service';
+import { Role, RoomMember, RoomService } from '../../services/room.service';
 import { ToastService } from '../../services/toast.service';
 import { AutoResizeDirective } from '../../directives/auto-resize.directive';
 
@@ -50,6 +50,8 @@ export class RoomComponent implements OnInit, OnDestroy {
 
     public isNearBottom = true;
 
+    public myRole: Role = 'member'
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -78,6 +80,7 @@ export class RoomComponent implements OnInit, OnDestroy {
                     takeUntil(this.destroy$), // Garante limpeza
                     catchError((err) => {
                         console.error('Erro:', err);
+                        this.router.navigate(['/home'])
                         this.isLoadingHistory = false;
                         return EMPTY;
                     })
@@ -245,6 +248,9 @@ export class RoomComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (members) => {
                     this.roomMembers = members;
+                    // Descobre o papel
+                    const me = members.find(m => m.user.user_id === this.currentUser?.id)
+                    if (me) this.myRole = me.role
                     console.log('Membros carregados: ', members);
                 },
                 error: (err) =>
@@ -284,4 +290,30 @@ export class RoomComponent implements OnInit, OnDestroy {
             this.roomMembers = [...this.roomMembers];
         }
     }
-}
+
+    onRemoveMember(userId: string) {
+        if (!confirm('Tem certeza que deseja remover ese membro??')) return
+
+        if (this.roomId){
+            this.roomService.removeMember(this.roomId, userId).subscribe({
+                next: () =>{
+                    this.toastService.success('Membro removido!!')
+                    this.loadRoomMembers() // recarrega a lista
+                },
+                error: () => this.toastService.error('Erro ao remover membro!')
+            })
+        }
+    }
+
+    onUpdateRole(event: {userId: string, role: Role}){
+        if (this.roomId) {
+            this.roomService.updateMemberRole(this.roomId, event.userId, event.role).subscribe({
+                next: () => {
+                    this.toastService.success('Cargo atualizado com sucesso!')
+                    this.loadRoomMembers()
+                },
+                error: () => this.toastService.error('Erro ao atualizar cargo!!')
+            })
+        }
+    }
+}   
