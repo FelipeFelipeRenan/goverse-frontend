@@ -157,6 +157,7 @@ export class RoomComponent implements OnInit, OnDestroy {
                 this.stopTypingTimer.next();
             }
         } else if (msg.type === 'CHAT' || !msg.type) {
+            this.playNotificationSound()
             // Se for chat normal
             this.messages.push(msg);
 
@@ -315,5 +316,11 @@ export class RoomComponent implements OnInit, OnDestroy {
                 error: () => this.toastService.error('Erro ao atualizar cargo!!')
             })
         }
+    }
+
+    playNotificationSound(){
+        const audio = new Audio('assets/sounds/pop.mp3')
+        audio.volume = 0.5
+        audio.play().catch(() => {})
     }
 }   
