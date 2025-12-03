@@ -220,43 +220,45 @@
                             {{ msg.username }}
                         </span>
 
-                        <div
-                            class="px-4 py-2 shadow-sm text-sm leading-relaxed break-words relative transition-all"
-                            [ngClass]="{
-                                'bg-blue-600 text-white': isMyMessage(
-                                    msg.user_id
-                                ),
-                                'bg-white text-gray-800 border border-gray-100':
-                                    !isMyMessage(msg.user_id),
-                                'rounded-2xl': true,
-                                'rounded-tr-sm':
-                                    isMyMessage(msg.user_id) &&
-                                    shouldShowAvatar(i),
-                                'rounded-br-sm':
-                                    isMyMessage(msg.user_id) &&
-                                    !shouldShowAvatar(i),
-                                'rounded-tl-sm':
-                                    !isMyMessage(msg.user_id) &&
-                                    shouldShowAvatar(i),
-                                'rounded-bl-sm':
-                                    !isMyMessage(msg.user_id) &&
-                                    !shouldShowAvatar(i)
-                            }"
-                        >
-                            {{ msg.content }}
 
-                            <span
-                                *ngIf="msg.CreatedAt"
-                                class="text-[10px] ml-2 inline-block align-bottom opacity-70 min-w-[30px] text-right"
-                                [ngClass]="
-                                    isMyMessage(msg.user_id)
-                                        ? 'text-blue-100'
-                                        : 'text-gray-400'
-                                "
+                            <div
+                                class="px-4 py-2 shadow-sm text-sm leading-relaxed break-words relative transition-all markdown-body"
+                                [ngClass]="{
+                                    'bg-blue-600 text-white': isMyMessage(
+                                        msg.user_id
+                                    ),
+                                    'bg-white text-gray-800 border border-gray-100':
+                                        !isMyMessage(msg.user_id),
+                                    'rounded-2xl': true,
+                                    'rounded-tr-sm':
+                                        isMyMessage(msg.user_id) &&
+                                        shouldShowAvatar(i),
+                                    'rounded-br-sm':
+                                        isMyMessage(msg.user_id) &&
+                                        !shouldShowAvatar(i),
+                                    'rounded-tl-sm':
+                                        !isMyMessage(msg.user_id) &&
+                                        shouldShowAvatar(i),
+                                    'rounded-bl-sm':
+                                        !isMyMessage(msg.user_id) &&
+                                        !shouldShowAvatar(i)
+                                }"
                             >
-                                {{ msg.CreatedAt | date : "HH:mm" }}
-                            </span>
-                        </div>
+                                <markdown [data]="msg.content"></markdown>
+
+                                <span
+                                    *ngIf="msg.CreatedAt"
+                                    class="text-[10px] ml-2 inline-block align-bottom opacity-70 min-w-[30px] text-right"
+                                    [ngClass]="
+                                        isMyMessage(msg.user_id)
+                                            ? 'text-blue-100'
+                                            : 'text-gray-400'
+                                    "
+                                >
+                                    {{ msg.CreatedAt | date : "HH:mm" }}
+                                </span>
+                            </div>
+                        
                     </div>
                 </div>
             </div>

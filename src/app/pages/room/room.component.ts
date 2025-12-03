@@ -18,11 +18,12 @@ import { Role, RoomMember, RoomService } from '../../services/room.service';
 import { ToastService } from '../../services/toast.service';
 import { AutoResizeDirective } from '../../directives/auto-resize.directive';
 import { VideoCallComponent } from '../../components/video-call/video-call.component';
+import { MarkdownComponent } from 'ngx-markdown';
 
 @Component({
     selector: 'app-room',
     standalone: true,
-    imports: [CommonModule, FormsModule, RoomSidebarComponent, VideoCallComponent],
+    imports: [CommonModule, FormsModule, RoomSidebarComponent, VideoCallComponent, MarkdownComponent],
     templateUrl: './room.component.html',
     styleUrls: ['./room.component.css'],
 })

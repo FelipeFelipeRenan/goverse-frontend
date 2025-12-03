@@ -2,6 +2,7 @@ import {
     APP_INITIALIZER,
     ApplicationConfig,
     provideZoneChangeDetection,
+    SecurityContext,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
@@ -15,6 +16,7 @@ import { CsrfInterceptor } from './interceptors/csrf_interceptor';
 import { AuthService } from './services/auth.service';
 import { Observable } from 'rxjs';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { provideMarkdown } from 'ngx-markdown';
 
 // Factory para o APP_INITIALIZER (estava correta)
 function initializeAppFactory(authService: AuthService): () => Observable<any> {
@@ -40,5 +42,10 @@ export const appConfig: ApplicationConfig = {
             deps: [AuthService], // Injeta o AuthService na factory
             multi: true,
         },
+        
+        provideMarkdown({
+            sanitize: SecurityContext.NONE
+        })
+    
     ],
 };
