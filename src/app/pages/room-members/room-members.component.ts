@@ -115,7 +115,7 @@ export class RoomMembersComponent implements OnInit {
         } else {
             this.filteredMembers = this.members.filter(
                 (member) =>
-                    member.user.name.toLowerCase().includes(this.searchQuery) ||
+                    member.user.username.toLowerCase().includes(this.searchQuery) ||
                     member.user.email.toLowerCase().includes(this.searchQuery)
             ); // Faltava este parêntese de fechamento
         }

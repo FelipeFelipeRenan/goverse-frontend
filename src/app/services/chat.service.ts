@@ -6,11 +6,12 @@ import { environment } from '../../environments/environment';
 
 export interface Message {
     id?: string;
-    type?: 'CHAT' | 'PRESENCE' | 'TYPING_START' | 'TYPING_STOP';
+    type?: 'CHAT' | 'PRESENCE' | 'TYPING_START' | 'TYPING_STOP' | 'SIGNAL' | 'DIRECT';
     content: string;
     room_id: string;
     user_id: string;
     username: string;
+    target_user_id?: string;
     CreatedAt?: string;
 }
 
@@ -62,10 +63,10 @@ export class ChatService {
     }
 
     // Retorna o Observable do socket para o componente "ouvir"
-    onNewMessage(): Observable<Message>{
-      if (this.socket$) {
-        return this.socket$.asObservable();
-      }
-      return EMPTY;
+    onNewMessage(): Observable<Message> {
+        if (this.socket$) {
+            return this.socket$.asObservable();
+        }
+        return EMPTY;
     }
 }

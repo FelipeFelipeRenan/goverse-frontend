@@ -17,11 +17,12 @@ import { RoomSidebarComponent } from '../../components/room-sidebar/room-sidebar
 import { Role, RoomMember, RoomService } from '../../services/room.service';
 import { ToastService } from '../../services/toast.service';
 import { AutoResizeDirective } from '../../directives/auto-resize.directive';
+import { VideoCallComponent } from '../../components/video-call/video-call.component';
 
 @Component({
     selector: 'app-room',
     standalone: true,
-    imports: [CommonModule, FormsModule, RoomSidebarComponent],
+    imports: [CommonModule, FormsModule, RoomSidebarComponent, VideoCallComponent],
     templateUrl: './room.component.html',
     styleUrls: ['./room.component.css'],
 })

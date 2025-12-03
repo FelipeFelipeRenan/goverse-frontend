@@ -39,7 +39,7 @@ export interface RoomMember {
     is_online?: boolean;
     user: {
         user_id: string;
-        name: string;
+        username: string;
         email: string;
         picture: string;
         created_at: string;

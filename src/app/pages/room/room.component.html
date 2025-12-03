@@ -312,8 +312,12 @@
         [isOpen]="isSidebarOpen"
         [members]="roomMembers"
         [currentUserRole]="myRole"
+        [roomId]="roomId"
+        [currentUser]="currentUser"
         (close)="isSidebarOpen = false"
         (removeUser)="onRemoveMember($event)"
         (updateRole)="onUpdateRole($event)"
     ></app-room-sidebar>
+
+    <app-video-call></app-video-call>
 </div>

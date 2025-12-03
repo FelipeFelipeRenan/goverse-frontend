@@ -97,14 +97,14 @@
         >
             <img
                 [src]="member.user.picture || '/defaultavatar.jpg'"
-                alt="Perfil de {{ member.user.name }}"
+                alt="Perfil de {{ member.user.username }}"
                 class="w-12 h-12 rounded-full mr-4 border-2 border-white shadow"
                 onerror="this.onerror=null;this.src='/defaultavatar.jpg'"
             />
 
             <div class="flex-1 min-w-0">
                 <div class="text-lg font-semibold text-gray-800 truncate">
-                    {{ member.user.name }}
+                    {{ member.user.username }}
                 </div>
                 <div class="text-sm text-gray-500 truncate">
                     {{ member.user.email }}
