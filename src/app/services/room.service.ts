@@ -55,6 +55,10 @@ export class RoomService {
 
     constructor(private http: HttpClient) {}
 
+    getRoom(roomId: string): Observable<{ id: string; name: string }> {
+        return this.http.get<{ id: string; name: string }>(`${this.baseUrl}/rooms/${roomId}`);
+    }
+
     getOwnedRooms(): Observable<Room[]> {
         return this.http.get<Room[]>(`${this.baseUrl}/rooms/mine`);
     }

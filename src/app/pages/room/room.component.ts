@@ -8,7 +8,7 @@ import {
     ChangeDetectorRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ChatService, Message } from '../../services/chat.service';
+import { ChatService, ConnectionStatus, Message } from '../../services/chat.service';
 import { timer, Subject, EMPTY } from 'rxjs';
 import { switchMap, takeUntil, catchError, max } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -51,6 +51,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     private stopTypingTimer = new Subject<void>();
 
     public isNearBottom = true;
+    public connectionStatus: ConnectionStatus = 'connecting';
 
     public myRole: Role = 'member'
 
@@ -73,26 +74,28 @@ export class RoomComponent implements OnInit, OnDestroy {
         this.roomId = this.route.snapshot.paramMap.get('id');
 
         if (this.roomId) {
-            this.roomName = `Sala ${this.roomId}`;
+            this.roomService
+                .getRoom(this.roomId)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: (r) => (this.roomName = r.name),
+                    error: () => (this.roomName = 'Sala'),
+                });
 
-            // Carrega histórico
-            this.chatService
-                .getHistory(this.roomId)
-                .pipe(
-                    takeUntil(this.destroy$), // Garante limpeza
-                    catchError((err) => {
-                        console.error('Erro:', err);
-                        this.router.navigate(['/home'])
-                        this.isLoadingHistory = false;
-                        return EMPTY;
-                    })
-                )
-                .subscribe((history) => {
-                    this.messages = history;
-                    this.isLoadingHistory = false;
+            this.loadHistory(true);
+
+            // Reconexão: o que chegou durante a queda só existe no histórico
+            this.chatService.reconnected$
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => {
+                    this.toastService.success('Reconectado.');
+                    this.loadHistory(false);
+                });
+            this.chatService.status$
+                .pipe(takeUntil(this.destroy$))
+                .subscribe((st) => {
+                    this.connectionStatus = st;
                     this.cdr.detectChanges();
-                    // 2. Correção Performance: Scroll só roda uma vez aqui
-                    this.scrollToBottom('instant');
                 });
 
             this.chatService.connect(this.roomId);
@@ -108,6 +111,30 @@ export class RoomComponent implements OnInit, OnDestroy {
             this.setupTypingHandlers();
             this.loadRoomMembers();
         }
+    }
+
+    // Carrega o histórico. Na reconexão, mescla com o que já está na tela (sem duplicar por id).
+    private loadHistory(initial: boolean): void {
+        if (!this.roomId) return;
+        this.chatService
+            .getHistory(this.roomId)
+            .pipe(
+                takeUntil(this.destroy$),
+                catchError((err) => {
+                    console.error('Erro ao carregar histórico:', err);
+                    this.isLoadingHistory = false;
+                    if (initial) this.router.navigate(['/home']);
+                    return EMPTY;
+                })
+            )
+            .subscribe((history) => {
+                const seen = new Set(history.map((m) => m.id));
+                const extra = this.messages.filter((m) => m.id && !seen.has(m.id));
+                this.messages = [...history, ...extra];
+                this.isLoadingHistory = false;
+                this.cdr.detectChanges();
+                this.scrollToBottom(initial ? 'instant' : 'smooth');
+            });
     }
 
     // metodo para detectar se o usuario subiu a tela
@@ -158,7 +185,11 @@ export class RoomComponent implements OnInit, OnDestroy {
                 this.typingUser = null;
                 this.stopTypingTimer.next();
             }
+        } else if (msg.type === 'ERROR') {
+            this.toastService.error(msg.content || 'Não foi possível enviar a mensagem.');
+            return;
         } else if (msg.type === 'CHAT' || !msg.type) {
+            if (msg.id && this.messages.some((m) => m.id === msg.id)) return;
             this.playNotificationSound()
             // Se for chat normal
             this.messages.push(msg);
@@ -174,10 +205,10 @@ export class RoomComponent implements OnInit, OnDestroy {
             this.scrollToBottom('smooth');
         }
 
-        this.updateMemberStatus(msg.user_id, true);
-
-        if (msg.type === 'PRESENCE' && msg.content.includes('saiu')) {
-            this.updateMemberStatus(msg.user_id, false);
+        if (msg.type === 'PRESENCE') {
+            this.updateMemberStatus(msg.user_id, !msg.content.includes('saiu'));
+        } else if (msg.type === 'CHAT' || !msg.type) {
+            this.updateMemberStatus(msg.user_id, true);
         }
     }
 
@@ -208,7 +239,10 @@ export class RoomComponent implements OnInit, OnDestroy {
                 content: this.newMessageContent,
                 room_id: this.roomId,
             };
-            this.chatService.sendMessage(msg);
+            if (!this.chatService.sendMessage(msg)) {
+                this.toastService.error('Sem conexão com o chat. Sua mensagem não foi enviada.');
+                return; // mantém o texto no campo para reenviar
+            }
             this.newMessageContent = '';
             this.stopTypingTimer.next();
             this.typingUser = null;
@@ -254,7 +288,6 @@ export class RoomComponent implements OnInit, OnDestroy {
                     // Descobre o papel
                     const me = members.find(m => m.user.user_id === this.currentUser?.id)
                     if (me) this.myRole = me.role
-                    console.log('Membros carregados: ', members);
                 },
                 error: (err) =>
                     console.error('Erro ao carregar membros: ', err),
