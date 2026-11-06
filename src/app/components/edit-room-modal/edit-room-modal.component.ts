@@ -18,7 +18,8 @@ import { Room, UpdateRoomPayload } from '../../services/room.service';
     styleUrl: './edit-room-modal.component.css',
 })
 export class EditRoomModalComponent implements OnChanges {
-    @Input() room!: UpdateRoomPayload;
+    // A home passa o objeto Room das listagens (room_name/room_description).
+    @Input() room!: Partial<Room> & UpdateRoomPayload;
     @Output() close = new EventEmitter<void>();
     @Output() updated = new EventEmitter<Partial<Room>>();
 
@@ -27,8 +28,8 @@ export class EditRoomModalComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['room'] && this.room) {
             this.editedRoom = {
-                name: this.room.name,
-                description: this.room.description,
+                name: this.room.room_name ?? this.room.name,
+                description: this.room.room_description ?? this.room.description,
                 is_public: this.room.is_public,
                 max_members: this.room.max_members,
             };
@@ -37,7 +38,6 @@ export class EditRoomModalComponent implements OnChanges {
 
     submit() {
         this.updated.emit(this.editedRoom);
-          console.log('Enviando atualizações:', this.editedRoom);
         this.close.emit(); // fecha o modal após atualizar
     }
 

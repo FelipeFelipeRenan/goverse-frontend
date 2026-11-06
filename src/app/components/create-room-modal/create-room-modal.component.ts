@@ -64,7 +64,7 @@ export class CreateRoomModalComponent {
                 if (err.status === 409) {
                     this.toastService.error('Já existe uma sala com este nome!');
                 } else {
-                    this.toastService.error('Erro ao criar sala. Tente novamente.');
+                    this.toastService.fromError(err, 'Erro ao criar sala. Tente novamente.');
                 }
             },
         });

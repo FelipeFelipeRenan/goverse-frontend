@@ -144,7 +144,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
                 console.error('Erro ao excluir sala:', err);
-               // this.toastService.error('Erro ao excluir sala');
+                this.toastService.fromError(err, 'Erro ao excluir sala');
             },
         });
     }
@@ -152,7 +152,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     onEditRoom(room: Room) {
         this.editedRoomId = room.room_id;
         this.roomBeingEdited = { ...room };
-        console.log('Setando roomBeingEdited:', this.roomBeingEdited); // debug
     }
 
     onUpdateRoom(updates: Partial<Room>) {
@@ -167,7 +166,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
                 console.error('Erro ao atualizar sala:', err);
-                //this.toastService.error('Erro ao atualizar sala');
+                this.toastService.fromError(err, 'Erro ao atualizar sala');
             },
         });
     }

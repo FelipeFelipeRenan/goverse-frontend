@@ -99,10 +99,11 @@ export class RoomService {
         );
     }
 
-    addMember(roomId: string, userId: string, role: Role): Observable<void> {
+    /** Convida por e-mail (quem convida sabe o e-mail, não o UUID). */
+    addMember(roomId: string, email: string, role: Role): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/rooms/${roomId}/members`, {
-            user_id: userId,
-            role: role,
+            email,
+            role,
         });
     }
 
@@ -119,7 +120,7 @@ export class RoomService {
     ): Observable<void> {
         return this.http.put<void>(
             `${this.baseUrl}/rooms/${roomId}/members/${memberId}/role`,
-            { role }
+            { new_role: role, role } // new_role é o contrato do backend; role por compatibilidade
         );
     }
 }

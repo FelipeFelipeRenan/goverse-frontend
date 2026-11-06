@@ -20,6 +20,12 @@ export class ToastService {
   
   constructor() { }
 
+  /** Mostra a mensagem que o backend mandou ({"message": "..."}) ou um texto padrão. */
+  fromError(err: any, fallback: string) {
+    const msg: string | undefined = err?.error?.message;
+    this.show(msg || fallback, 'error');
+  }
+
   show(message:string , type: 'success' | 'error' | 'info' = 'info'){
     const id = this.counter++;
     const newToast: Toast = {id, type, message}
