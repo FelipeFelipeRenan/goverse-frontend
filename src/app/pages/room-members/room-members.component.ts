@@ -71,7 +71,7 @@ export class RoomMembersComponent implements OnInit {
                 this.updatePagination();
             },
             error: (err) => {
-                this.toastService.error('Erro ao remover membro');
+                this.toastService.fromError(err, 'Erro ao remover membro');
                 console.error('Erro ao remover membro: ', err);
             },
         });
@@ -101,7 +101,7 @@ export class RoomMembersComponent implements OnInit {
                     select.value =
                         this.members.find((m) => m.user.user_id === userId)
                             ?.role || 'member';
-                    this.toastService.error('Não foi possível atualizar a função do membro.');
+                    this.toastService.fromError(err, 'Não foi possível atualizar a função do membro.');
                 },
             });
     }
@@ -152,15 +152,16 @@ export class RoomMembersComponent implements OnInit {
         );
     }
 
-    onAddMember(data: {user_id:string; role: Role}){
-        this.roomService.addMember(this.roomId, data.user_id, data.role).subscribe({
+    onAddMember(data: {email: string; role: Role}){
+        this.roomService.addMember(this.roomId, data.email, data.role).subscribe({
             next: () =>{
+                this.toastService.success('Membro adicionado.')
                 this.showAddMemberModal = false
                 this.fetchMembers()
             },
             error: (err) =>{
                 console.error('Erro ao adicionar membro: ', err)
-                this.toastService.error('Erro ao adicionar membro')
+                this.toastService.fromError(err, 'Erro ao adicionar membro')
             }
         })
     }

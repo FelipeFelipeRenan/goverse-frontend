@@ -348,7 +348,7 @@ export class RoomComponent implements OnInit, OnDestroy {
                     this.toastService.success('Cargo atualizado com sucesso!')
                     this.loadRoomMembers()
                 },
-                error: () => this.toastService.error('Erro ao atualizar cargo!!')
+                error: (err) => this.toastService.fromError(err, 'Erro ao atualizar cargo')
             })
         }
     }

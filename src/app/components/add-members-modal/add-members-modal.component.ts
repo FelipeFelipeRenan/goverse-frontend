@@ -12,16 +12,18 @@ import { Role } from '../../services/room.service';
 })
 export class AddMembersModalComponent {
     @Output() close = new EventEmitter<void>();
-    @Output() add = new EventEmitter<{ user_id: string; role: Role }>();
+    @Output() add = new EventEmitter<{ email: string; role: Role }>();
 
-    userId = '';
+    email = '';
     role: Role = 'member';
 
-    roles: Role[] = ['owner', 'admin', 'moderator', 'member', 'guest'];
+    // 'owner' fica de fora: o backend não permite atribuir (a sala tem um único dono)
+    roles: Role[] = ['admin', 'moderator', 'member', 'guest'];
 
     submit() {
-        if (!this.userId.trim()) return;
-        this.add.emit({ user_id: this.userId.trim(), role: this.role });
+        const email = this.email.trim();
+        if (!email) return;
+        this.add.emit({ email, role: this.role });
     }
 
     cancel() {
