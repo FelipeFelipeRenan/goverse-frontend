@@ -41,6 +41,9 @@ export class ChatService {
     /** Emite quando a conexão volta depois de uma queda: hora de recarregar o histórico. */
     readonly reconnected$ = this.reconnected.asObservable();
 
+    /** Só para testes: substitui o WebSocket do navegador. */
+    wsCtor?: typeof WebSocket;
+
     constructor(private http: HttpClient) {}
 
     // Busca o historico de mensagens, via http
@@ -63,6 +66,7 @@ export class ChatService {
         const socket = webSocket<Message>({
             // O backend ja pega o cookie de auth automaticamente
             url: `${this.wsUrl}?roomId=${this.roomId}`,
+            WebSocketCtor: this.wsCtor,
             openObserver: {
                 next: () => {
                     const wasReconnect = this.attempt > 0;
